@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.geometry.Insets?>
+
+<GridPane fx:id="boardGrid" 
+          alignment="CENTER" 
+          styleClass="board-grid" 
+          stylesheets="@style.css" 
+          xmlns="http://javafx.com/javafx/21" 
+          xmlns:fx="http://javafx.com/fxml/1" 
+          fx:controller="com.checkers.controller.BoardController">
+
+</GridPane>

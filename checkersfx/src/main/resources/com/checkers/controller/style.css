@@ -1,0 +1,251 @@
+/* Cài đặt chung cho toàn ứng dụng */
+.root {
+    -fx-background-color: white; /* Nền trắng */
+    -fx-font-family: "Arial", sans-serif;
+}
+
+/* ====== KIỂU DÁNG CHO MENU (TRANG 1) ====== */
+.menu-button {
+    -fx-background-color: white;
+    -fx-text-fill: #8E1451; /* Màu tím đỏ giống PDF */
+    -fx-border-color: #8E1451; /* Viền cùng màu chữ */
+    -fx-border-width: 1px;
+    -fx-border-radius: 15px; /* Bo góc viền */
+    -fx-background-radius: 15px; /* Bo góc nền */
+    -fx-font-size: 22px; /* Chữ khá to */
+    -fx-font-style: italic; /* Chữ in nghiêng */
+    /* -fx-padding: 10 10 10 10; */
+    -fx-cursor: hand; /* Đổi chuột thành hình bàn tay */
+}
+
+/* Hiệu ứng khi lướt chuột qua nút */
+.menu-button:hover {
+    -fx-background-color: #F8E8F0; /* Hiện nền phớt hồng nhẹ */
+}
+
+/* Hiệu ứng khi bấm nút */
+.menu-button:pressed {
+    -fx-background-color: #8E1451;
+    -fx-text-fill: white;
+}
+
+.title-label {
+    -fx-font-size: 120px;      /* Chữ to hẳn lên */
+    -fx-font-weight: bold;    /* Chữ đậm */
+    -fx-text-fill: #8E1451;   /* Màu tím đỏ đặc trưng */
+    -fx-margin-bottom: 40px;  /* Tạo khoảng cách với các nút bên dưới */
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif; 
+    -fx-font-style: italic; /* Chữ in nghiêng */
+}
+
+/* ====== KIỂU DÁNG CHO TRANG 2 (GAME BOARD) ====== */
+
+/* Thanh trên và dưới */
+.bar-background {
+    -fx-background-color: #F4F4F4; /* Màu xám nhạt như PDF */
+    -fx-padding: 10 20 10 20;
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 1 0 1 0; /* Chỉ có viền trên và dưới */
+}
+
+/* Chữ trong thanh thông tin */
+.player-text {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+.time-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555555;
+}
+.vs-text {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* 4 Nút điều khiển bên dưới */
+.game-button {
+    -fx-background-color: white;
+    -fx-border-color: #AAAAAA;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+}
+.game-button:hover {
+    -fx-background-color: #E8E8E8;
+}
+
+/* CSS cho ô cờ (Sẽ dùng trong file Java) */
+.light-square { -fx-background-color: #FFA6C9; } /* Hồng nhạt */
+.dark-square { -fx-background-color: #9A0079; }  /* Tím đậm */
+
+/* Kiểu dáng cho khung bao quanh bàn cờ */
+.board-grid {
+    /* Đổi màu viền đậm hơn (màu tím đỏ đậm hoặc đen nâu) */
+    -fx-border-color: #5D0E35; 
+    
+    /* Độ dày viền: tăng lên 5px hoặc 8px tùy sở thích của bạn */
+    -fx-border-width: 8px; 
+    
+    /* Bo góc nhẹ cho viền ngoài nếu muốn (tùy chọn) */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    
+    /* Tạo hiệu ứng bóng đổ để bàn cờ trông "đằm" và nổi khối hơn */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 15, 0, 0, 0);
+    
+    /* Đảm bảo không có khoảng cách giữa viền và các ô cờ bên trong */
+    -fx-padding: 0;
+}
+
+/* Quân cờ chung */
+.piece {
+    /* Đổi màu viền đậm hơn (màu đen nâu hoặc xanh đen) */
+    -fx-stroke: #002040; 
+    
+    /* Độ dày viền: tăng lên 2.5px hoặc 3px tùy sở thích của bạn */
+    -fx-stroke-width: 2.5px; 
+    
+    /* Tạo hiệu ứng bóng đổ mờ nhẹ để quân cờ trông "đằm" và nổi khối hơn */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 8, 0, 0, 2);
+    
+    /* Đảm bảo quân cờ sắc nét không bị nhòe */
+    -fx-stroke-type: outside; 
+}
+
+/* 1. Quân Trắng */
+.white-piece {
+    -fx-fill: linear-gradient(to bottom right, #ffffff, #e0e0e0);
+}
+
+/* 2. Quân Xanh */
+.blue-piece {
+    -fx-fill: linear-gradient(to bottom right, #3498db, #2c3e50);
+}
+
+/* 3. Quân Vua (có thể áp dụng cho cả trắng và xanh khi lên vua) */
+/* Kiểu dáng cho biểu tượng vương miện */
+.crown-label {
+    -fx-font-size: 32px; /* Chỉnh kích thước to/nhỏ tùy ý */
+    -fx-text-fill: #FFD700; /* Màu vàng Gold rực rỡ */
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI Symbol"; 
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 0, 1);
+    -fx-alignment: center;
+}
+
+/* Các lớp Highlight giữ nguyên */
+.piece-selected {
+    -fx-stroke: #00ff00;
+    -fx-stroke-width: 4px;
+}
+
+.piece-hinted {
+    -fx-stroke: #FFD700; 
+    -fx-stroke-width: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.8), 15, 0, 0, 0); 
+}
+
+/* Hiệu ứng khi quân cờ được chọn */
+.piece-selected {
+    -fx-stroke: #00ff00;
+    -fx-stroke-width: 4px;
+}
+
+/* THÊM MỚI: Hiệu ứng khi quân cờ được AI gợi ý */
+.piece-hinted {
+    -fx-stroke: #FFD700; /* Viền màu Vàng Gold */
+    -fx-stroke-width: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.8), 15, 0, 0, 0); /* Bóng đổ vàng rực */
+}
+
+/* Chấm tròn nhỏ gợi ý nước đi */
+.suggest-dot {
+    -fx-fill: rgba(255, 255, 255, 0.4); /* Trắng mờ */
+    -fx-stroke: rgba(0, 0, 0, 0.1);
+    -fx-stroke-width: 1;
+}
+
+/* Hiệu ứng khi di chuột vào ô có chấm tròn */
+.dark-square:hover .suggest-dot {
+    -fx-fill: rgba(255, 255, 255, 0.7);
+}
+
+/* Thêm hiệu ứng bóng đổ đậm hơn khi quân cờ đang trượt */
+.piece-moving {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 5);
+}
+
+/* Đảm bảo StackPane chứa ô cờ không chặn hiệu ứng nổi của quân cờ */
+.dark-square, .light-square {
+    -fx-background-insets: 0;
+}
+
+/* ====== GIAO DIỆN CÀI ĐẶT (SETTINGS DIALOG) ====== */
+.settings-dialog {
+    -fx-background-color: white;
+    -fx-border-color: #8E1451; /* Viền tím đỏ đồng bộ Menu */
+    -fx-border-width: 3px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 20, 0, 0, 5); /* Bóng đổ nổi bật */
+}
+
+.settings-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #8E1451;
+}
+
+/* Nút X đóng dialog */
+.close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8E1451;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 5 10 5 10;
+}
+
+.close-button:hover {
+    -fx-background-color: #F8E8F0;
+    -fx-background-radius: 50%;
+}
+
+/* Custom CheckBox */
+.settings-checkbox {
+    -fx-font-size: 18px;
+    -fx-text-fill: #333333;
+    -fx-cursor: hand;
+}
+
+/* Dòng chứa cài đặt */
+.settings-row {
+    -fx-padding: 5 0 5 0;
+}
+
+.settings-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #333333;
+}
+
+/* Thanh trượt (Track) */
+.toggle-track {
+    -fx-min-width: 50px;
+    -fx-min-height: 26px;
+    -fx-max-width: 50px;
+    -fx-background-radius: 15px;
+    -fx-background-color: #DDDDDD; /* Màu xám khi tắt */
+    -fx-cursor: hand;
+}
+
+/* Chấm tròn (Dot) */
+.toggle-dot {
+    -fx-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 1);
+}
+
+/* Khi nút gạt ở trạng thái Bật */
+.toggle-track-on {
+    -fx-background-color: #8E1451; /* Màu tím đỏ đặc trưng */
+}

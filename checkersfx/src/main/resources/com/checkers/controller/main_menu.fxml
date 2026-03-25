@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="25.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.controller.MainMenuController">
+    <padding>
+        <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+    </padding>
+
+    <Label styleClass="title-label" text="Checker Game" textAlignment="CENTER">
+      <VBox.margin>
+         <Insets bottom="30.0" />
+      </VBox.margin></Label>
+
+    <Button mnemonicParsing="false" onAction="#handlePvP" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Người Vs Người" />
+    <Button mnemonicParsing="false" onAction="#handlePvE" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Người Vs Máy" />
+    <Button mnemonicParsing="false" onAction="#handleEvE" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Máy Vs Máy" />
+    <Button mnemonicParsing="false" onAction="#handleSettings" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Cài đặt" />
+    <Button mnemonicParsing="false" onAction="#handleInstructions" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Hướng dẫn" />
+    <Button mnemonicParsing="false" onAction="#onExit" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Thoát" />
+</VBox>
