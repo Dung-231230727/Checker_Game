@@ -181,6 +181,11 @@ public class BoardController {
 
     private void handleSquareClick(int row, int col) {
         if (gameCtrl == null) return;
+
+        if (!gameCtrl.isGameStarted()) {
+            return; 
+        }
+
         GameState state = gameCtrl.getGameState();
         if (state.isGameOver() || state.getCurrentPlayer().getType() == Types.PlayerType.AI) return;
 

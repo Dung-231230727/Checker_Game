@@ -52,14 +52,21 @@
 
     <bottom>
         <HBox alignment="CENTER" spacing="20.0" styleClass="bar-background">
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+
             <Label style="-fx-font-size: 35px; -fx-cursor: hand;" text="⚙" onMouseClicked="#handleOpenSettings"/>
             
             <Region HBox.hgrow="ALWAYS" /> 
-            <Button mnemonicParsing="false" styleClass="game-button" text="Hủy bỏ ván chơi" onAction="#handleResetGame"/>
             
-            <Button mnemonicParsing="false" styleClass="game-button" text="Đi lại" onAction="#handleUndoMove"/>
-            <Button mnemonicParsing="false" styleClass="game-button" text="Gợi ý" onAction="#handleShowHint"/>
-            <Button mnemonicParsing="false" styleClass="game-button" text="Đầu hàng" onAction="#handleSurrender"/>
+            <Button fx:id="btnStart" styleClass="game-button" text="Bắt đầu" onAction="#handleStartGame"/>
+            <Button fx:id="btnExit" styleClass="game-button" text="Hủy bỏ ván chơi" onAction="#handleExitToMenu"/>
+            
+            <Button fx:id="btnPause" visible="false" managed="false" styleClass="game-button" text="Tạm dừng" onAction="#handlePause"/>
+            <Button fx:id="btnUndo" visible="false" managed="false" styleClass="game-button" text="Đi lại" onAction="#handleUndoMove"/>
+            <Button fx:id="btnHint" visible="false" managed="false" styleClass="game-button" text="Gợi ý" onAction="#handleShowHint"/>
+            <Button fx:id="btnSurrender" visible="false" managed="false" styleClass="game-button" text="Đầu hàng" onAction="#handleSurrender"/>
             
             <Region HBox.hgrow="ALWAYS" /> 
         </HBox>

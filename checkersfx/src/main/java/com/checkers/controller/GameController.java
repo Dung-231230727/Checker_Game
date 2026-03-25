@@ -1,24 +1,34 @@
 package com.checkers.controller;
 
+import java.io.IOException;
 import java.util.Stack;
 import com.checkers.model.*;
+import com.checkers.utils.MessageBox;
+
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.event.ActionEvent;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 
 public class GameController {
     @FXML private StackPane centerContainer; 
@@ -45,6 +55,10 @@ public class GameController {
     private Stack<Board> boardHistory = new Stack<>();
     private Stack<Types.PlayerColor> turnHistory = new Stack<>();
     
+    @FXML private Button btnStart, btnExit, btnPause, btnUndo, btnHint, btnSurrender;
+
+
+    private int currentGameMode = 1; 
     @FXML
     public void initialize() {
         SoundManager.loadSounds();
@@ -66,6 +80,13 @@ public class GameController {
             boardPanelController.getBoardGrid().maxWidthProperty().bind(size);
             boardPanelController.getBoardGrid().maxHeightProperty().bind(size);
         }
+
+        setUIPplaying(false);
+    
+        // Hiển thị mốc thời gian mặc định
+        totalTimerLabel.setText("10:00");
+        player1TimerLabel.setText("60s");
+        player2TimerLabel.setText("60s");
     }
 
     public void applyMove(Move move) {
@@ -199,6 +220,7 @@ public class GameController {
     }
 
     public void startGame(int mode) {
+        this.currentGameMode = mode;
         // mode 0: Người vs Người | mode 1: Người vs Máy | mode 2: Máy vs Máy
         Player p1 = (mode == 2) ? new Player("AI Trắng", Types.PlayerColor.WHITE, Types.PlayerType.AI) : 
                                   new Player("Player 1", Types.PlayerColor.WHITE, Types.PlayerType.HUMAN);
@@ -225,16 +247,6 @@ public class GameController {
         player1TimerLabel.setText(player1TurnTime + "s");
         player2TimerLabel.setText(player2TurnTime + "s");
         totalTimerLabel.setText(formatTime(totalMatchTime));
-
-        if (gameLoop != null) gameLoop.stop();
-        gameLoop = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateTimers()));
-        gameLoop.setCycleCount(Timeline.INDEFINITE);
-        gameLoop.play();
-
-        // Nếu Player 1 là AI, mồi lượt đánh đầu tiên
-        if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
-            aiController.processAITurn(gameState);
-        }
     }
 
     private void updateTimers() {
@@ -281,27 +293,112 @@ public class GameController {
     }
 
     @FXML
-    public void handleResetGame(ActionEvent event) {
-        try {
-            // 1. Dừng AI ngay lập tức để nó không tính toán và gọi lệnh Move nữa
-            if (aiController != null) {
-                aiController.stop(); 
-            }
+    public void handleStartGame() {
+        // 1. Khởi tạo dữ liệu game (quân cờ, người chơi)
+        startGame(currentGameMode); 
+        isGameStarted = true;
 
-            // 2. Dừng mọi âm thanh đang phát
-            SoundManager.stopAllSounds();
+        // 2. Bắt đầu kích hoạt đồng hồ đếm ngược tại đây
+        if (gameLoop != null) gameLoop.stop();
+        gameLoop = new Timeline(new KeyFrame(Duration.seconds(1), e -> updateTimers()));
+        gameLoop.setCycleCount(Timeline.INDEFINITE);
+        gameLoop.play(); // ĐỒNG HỒ CHỈ CHẠY KHI NHẤN NÚT
 
-            // 3. Quan trọng: Dừng bộ đếm thời gian (Timeline)
-            if (gameLoop != null) {
-                gameLoop.stop();
-            }
+        // 3. Chuyển đổi giao diện sang trạng thái Playing
+        setUIPplaying(true);
 
-            // 4. Quay về màn hình chính
-            com.checkers.App.setRoot("controller/main_menu");
-            
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
+        // 4. Nếu lượt đầu là AI thì cho đánh luôn
+        if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
+            aiController.processAITurn(gameState);
         }
+    }
+
+    @FXML
+    public void handleExitToMenu() {
+        boolean confirm = MessageBox.show("HỦY VÁN ĐẤU", 
+            "Ván đấu hiện tại sẽ không được lưu. Bạn muốn quay về Menu?", 
+            MessageBox.MessageButtons.YES_NO);
+    
+        if (confirm) {
+            if (aiController != null) aiController.stop();
+            SoundManager.stopAllSounds();
+            try {
+                com.checkers.App.setRoot("controller/main_menu");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void handlePause() {
+        // 1. Tạm dừng tất cả các hoạt động hiện tại
+        if (gameLoop != null) gameLoop.pause(); 
+        if (aiController != null) aiController.stop();
+
+        // 2. Tạo nội dung đếm ngược cho phần "ruột" của thông báo
+        VBox pauseBox = new VBox(15);
+        pauseBox.setAlignment(Pos.CENTER);
+        
+        Label timerLabel = new Label("Thời gian tạm dừng còn lại: 05:00");
+        timerLabel.setStyle("-fx-text-fill: #8E1451; -fx-font-size: 18px; -fx-font-weight: bold;");
+        
+        Label msgLabel = new Label("Chọn 'Đồng ý' để tiếp tục hoặc 'Hủy bỏ' để thoát ván đấu.");
+        msgLabel.setStyle("-fx-text-fill: #1a1a1a;"); // Màu đen để nổi trên nền trắng
+        msgLabel.setWrapText(true);
+
+        pauseBox.getChildren().addAll(timerLabel, msgLabel);
+
+        // 3. Logic đếm ngược 5 phút trong lúc hiện thông báo
+        final int[] secondsLeft = {300}; 
+        Timeline pauseTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            secondsLeft[0]--;
+            timerLabel.setText(String.format("Thời gian tạm dừng còn lại: %02d:%02d", 
+                            secondsLeft[0] / 60, secondsLeft[0] % 60));
+            
+            if (secondsLeft[0] <= 0) {
+                // Hết giờ thì tự đóng thông báo (mặc định là hủy ván)
+                if (timerLabel.getScene() != null) {
+                    ((Stage)timerLabel.getScene().getWindow()).close();
+                }
+            }
+        }));
+        pauseTimeline.setCycleCount(Animation.INDEFINITE);
+        pauseTimeline.play();
+
+        // 4. Hiển thị MessageBox với 2 nút YES_NO
+        // true = Tiếp tục (Đồng ý), false = Hủy bỏ (Hủy bỏ)
+        boolean resume = MessageBox.showCustom("TẠM DỪNG", pauseBox, MessageBox.MessageButtons.YES_NO);
+        
+        pauseTimeline.stop();
+
+        if (resume) {
+            // --- TRƯỜNG HỢP: TIẾP TỤC ---
+            if (gameLoop != null) gameLoop.play();
+            
+            // Nếu là lượt của AI, kích hoạt máy đánh tiếp
+            if (gameState != null && !gameState.isGameOver() && 
+                gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
+                aiController.processAITurn(gameState);
+            }
+        } else {
+            // --- TRƯỜNG HỢP: HỦY BỎ VÁN ĐẤU ---
+            handleSurrenderAfterConfirm(); 
+        }
+    }
+
+    // Hàm phụ để reset game ngay lập tức mà không cần hỏi lại lần nữa
+    private void handleSurrenderAfterConfirm() {
+        if (gameLoop != null) gameLoop.stop();
+        if (aiController != null) aiController.stop();
+        
+        setUIPplaying(false); // Đưa UI về trạng thái chờ
+        startGame(this.currentGameMode); // Reset bàn cờ
+        if (gameLoop != null) gameLoop.stop(); // Đảm bảo đồng hồ không tự chạy
+        
+        totalTimerLabel.setText("10:00");
+        player1TimerLabel.setText("60s");
+        player2TimerLabel.setText("60s");
     }
 
     public void handleGameOver() { if(gameLoop != null) gameLoop.stop(); }
@@ -321,22 +418,27 @@ public class GameController {
     }
 
     @FXML
-    private void handleSurrender() {
-        if (gameState.isGameOver()) return;
+    public void handleSurrender() {
+        boolean confirm = MessageBox.show("XÁC NHẬN", "Bạn có thực sự muốn đầu hàng?", MessageBox.MessageButtons.YES_NO);
         
-        if (gameLoop != null) gameLoop.stop();
-        if (aiController != null) aiController.stop();
-        
-        gameState.setGameOver(true);
-        
-        String loser = (gameState.getCurrentPlayerColor() == Types.PlayerColor.WHITE) ? player1NameLabel.getText() : player2NameLabel.getText();
-        String winner = (gameState.getCurrentPlayerColor() == Types.PlayerColor.WHITE) ? player2NameLabel.getText() : player1NameLabel.getText();
-        
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Đầu hàng");
-        alert.setHeaderText(loser + " đã giương cờ trắng!");
-        alert.setContentText("Chúc mừng " + winner + " giành chiến thắng.");
-        alert.showAndWait();
+        if (confirm) {
+            isGameStarted = false;
+            if (gameLoop != null) gameLoop.stop();
+            if (aiController != null) aiController.stop();
+            
+            MessageBox.show("KẾT THÚC", "Bạn đã đầu hàng!", MessageBox.MessageButtons.OK);
+            
+            // Reset về trạng thái ban đầu
+            setUIPplaying(false);
+            startGame(this.currentGameMode);
+
+            if (gameLoop != null) gameLoop.stop();
+            
+            // Reset đồng hồ hiển thị
+            totalTimerLabel.setText("10:00");
+            player1TimerLabel.setText("60s");
+            player2TimerLabel.setText("60s");
+        }
     }
 
     @FXML
@@ -376,23 +478,48 @@ public class GameController {
     @FXML
     private void handleOpenSettings() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/com/checkers/controller/settings_dialog.fxml"));
-            javafx.scene.Parent root = loader.load();
-            javafx.stage.Stage settingsStage = new javafx.stage.Stage();
-            settingsStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            // 1. Nạp file FXML chứa các nút gạt (Âm thanh, Nhạc, Rung)
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/checkers/controller/settings_dialog.fxml"));
+            Node settingsContent = loader.load();
             
-            // 1. Thay UNDECORATED bằng TRANSPARENT
-            settingsStage.initStyle(javafx.stage.StageStyle.TRANSPARENT); 
+            // 2. Gọi MessageBox hiển thị giao diện Cài đặt
+            // Dùng nút OK để đóng lại sau khi chỉnh sửa
+            MessageBox.showCustom("CÀI ĐẶT", settingsContent, MessageBox.MessageButtons.OK);
             
-            javafx.scene.Scene scene = new javafx.scene.Scene(root);
-            
-            // 2. Làm nền Scene trong suốt
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT); 
-            
-            settingsStage.setScene(scene);
-            settingsStage.showAndWait();
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            MessageBox.show("LỖI", "Không thể tải cấu hình cài đặt!", MessageBox.MessageButtons.OK);
         }
+    }
+
+    private void setUIPplaying(boolean isPlaying) {
+        // Nhóm ban đầu (Start và Exit)
+        btnStart.setVisible(!isPlaying);
+        btnStart.setManaged(!isPlaying);
+        btnExit.setVisible(!isPlaying);
+        btnExit.setManaged(!isPlaying);
+
+        // Kiểm tra nếu là chế độ Máy vs Máy (Mode 2)
+        boolean isEvE = (currentGameMode == 2);
+
+        // Nút Tạm dừng luôn hiện khi đang chơi
+        btnPause.setVisible(isPlaying);
+        btnPause.setManaged(isPlaying);
+
+        // Các nút chức năng chỉ hiện khi đang chơi và KHÔNG PHẢI chế độ Máy vs Máy
+        btnUndo.setVisible(isPlaying && !isEvE);
+        btnUndo.setManaged(isPlaying && !isEvE);
+        
+        btnHint.setVisible(isPlaying && !isEvE);
+        btnHint.setManaged(isPlaying && !isEvE);
+        
+        btnSurrender.setVisible(isPlaying && !isEvE);
+        btnSurrender.setManaged(isPlaying && !isEvE);
+    }
+
+    private boolean isGameStarted = false;
+
+    public boolean isGameStarted() {
+        return isGameStarted;
     }
 }

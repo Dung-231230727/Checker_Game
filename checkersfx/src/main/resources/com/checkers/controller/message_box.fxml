@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane style="-fx-background-color: transparent; -fx-padding: 20;" 
+           xmlns="http://javafx.com/javafx/21" 
+           xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.checkers.controller.MessageBoxController">
+    
+    <VBox fx:id="rootBox" prefWidth="400.0" spacing="10.0" styleClass="settings-dialog" stylesheets="@style.css">
+        <padding>
+            <Insets top="20.0" right="25.0" bottom="20.0" left="30.0"/>
+        </padding>
+
+        <HBox alignment="CENTER_LEFT">
+            <Label fx:id="titleLabel" text="TIÊU ĐỀ" styleClass="settings-title"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="✕" onAction="#handleClose" styleClass="close-button"/>
+        </HBox>
+
+        <VBox fx:id="contentArea" spacing="20.0" alignment="CENTER">
+            <padding>
+                <Insets top="10" bottom="10"/>
+            </padding>
+            </VBox>
+
+        <HBox alignment="CENTER_RIGHT" spacing="15" fx:id="footerArea">
+            <Button text="Xác nhận" onAction="#handleClose" styleClass="apply-button"/>
+        </HBox>
+    </VBox>
+</StackPane>

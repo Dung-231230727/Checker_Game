@@ -4,47 +4,39 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.Circle?>
 
-<StackPane style="-fx-background-color: transparent; -fx-padding: 20;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.controller.SettingsController">
+<VBox fx:id="rootBox" spacing="20.0" xmlns="http://javafx.com/javafx/21" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.checkers.controller.SettingsController"
+      stylesheets="@style.css">
     
-    <VBox fx:id="rootBox" prefWidth="380.0" spacing="25.0" styleClass="settings-dialog" stylesheets="@style.css">
-        <padding>
-            <Insets top="20.0" right="25.0" bottom="30.0" left="30.0"/>
-        </padding>
+    <padding>
+        <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+    </padding>
 
-        <HBox alignment="CENTER_LEFT">
-            <Label text="CÀI ĐẶT" styleClass="settings-title"/>
+    <VBox spacing="15.0">
+        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
+            <Label text="Âm thanh" styleClass="settings-label"/>
             <Region HBox.hgrow="ALWAYS" />
-            <Button text="✕" onAction="#onClose" styleClass="close-button"/>
+            <StackPane fx:id="toggleSound" onMouseClicked="#handleToggleSound" styleClass="toggle-track">
+                <Circle fx:id="dotSound" radius="10" styleClass="toggle-dot" translateX="-12"/>
+            </StackPane>
         </HBox>
 
-        <VBox spacing="20.0">
-            <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-                <Label text="Âm thanh" styleClass="settings-label"/>
-                <Region HBox.hgrow="ALWAYS" />
-                <StackPane fx:id="toggleSound" onMouseClicked="#handleToggleSound" styleClass="toggle-track">
-                    <Circle fx:id="dotSound" radius="10" styleClass="toggle-dot" translateX="-12"/>
-                </StackPane>
-            </HBox>
+        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
+            <Label text="Nhạc nền" styleClass="settings-label"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <StackPane fx:id="toggleMusic" onMouseClicked="#handleToggleMusic" styleClass="toggle-track">
+                <Circle fx:id="dotMusic" radius="10" styleClass="toggle-dot" translateX="-12"/>
+            </StackPane>
+        </HBox>
 
-            <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-                <Label text="Nhạc nền" styleClass="settings-label"/>
-                <Region HBox.hgrow="ALWAYS" />
-                <StackPane fx:id="toggleMusic" onMouseClicked="#handleToggleMusic" styleClass="toggle-track">
-                    <Circle fx:id="dotMusic" radius="10" styleClass="toggle-dot" translateX="-12"/>
-                </StackPane>
-            </HBox>
-
-            <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-                <Label text="Rung" styleClass="settings-label"/>
-                <Region HBox.hgrow="ALWAYS" />
-                <StackPane fx:id="toggleVibration" onMouseClicked="#handleToggleVibration" styleClass="toggle-track">
-                    <Circle fx:id="dotVibration" radius="10" styleClass="toggle-dot" translateX="-12"/>
-                </StackPane>
-            </HBox>
-
-            <HBox alignment="CENTER_RIGHT">
-                <Button text="Áp dụng" onAction="#handleApply" styleClass="apply-button"/>
-            </HBox>
-        </VBox>
+        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
+            <Label text="Rung" styleClass="settings-label"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <StackPane fx:id="toggleVibration" onMouseClicked="#handleToggleVibration" styleClass="toggle-track">
+                <Circle fx:id="dotVibration" radius="10" styleClass="toggle-dot" translateX="-12"/>
+            </StackPane>
+        </HBox>
     </VBox>
-</StackPane>
+
+    </VBox>

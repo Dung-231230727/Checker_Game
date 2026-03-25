@@ -1,10 +1,13 @@
 package com.checkers.controller;
 
 import com.checkers.App;
+import com.checkers.utils.MessageBox;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -46,46 +49,38 @@ public class MainMenuController {
 
     @FXML
     private void handleSettings(ActionEvent event) { // Ở GameController thì tên là handleOpenSettings
-        try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("controller/settings_dialog.fxml"));
-            Parent root = loader.load();
+       try {
+            // 1. Nạp file FXML chứa các nút gạt (Âm thanh, Nhạc, Rung)
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/checkers/controller/settings_dialog.fxml"));
+            Node settingsContent = loader.load();
             
-            Stage settingsStage = new Stage();
-            settingsStage.initModality(Modality.APPLICATION_MODAL);
+            // 2. Gọi MessageBox hiển thị giao diện Cài đặt
+            // Dùng nút OK để đóng lại sau khi chỉnh sửa
+            MessageBox.showCustom("CÀI ĐẶT", settingsContent, MessageBox.MessageButtons.OK);
             
-            // 1. CHUYỂN THÀNH TRONG SUỐT HOÀN TOÀN thay vì UNDECORATED
-            settingsStage.initStyle(StageStyle.TRANSPARENT); 
-            
-            Scene scene = new Scene(root);
-            // 2. TÔ MÀU NỀN CỦA SCENE THÀNH TRONG SUỐT (Để lộ góc bo tròn của CSS)
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT); 
-            
-            settingsStage.setScene(scene);
-            settingsStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
+            MessageBox.show("LỖI", "Không thể tải cấu hình cài đặt!", MessageBox.MessageButtons.OK);
         }
     }
 
     @FXML
     public void onExit(ActionEvent event) {
-        Platform.exit();
-        System.exit(0);
+        if (MessageBox.show("THOÁT GAME", "Bạn có chắc chắn muốn đóng trò chơi không?", MessageBox.MessageButtons.YES_NO)) {
+            javafx.application.Platform.exit();
+            System.exit(0);
+        }
     }
 
     @FXML
     private void handleInstructions(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Hướng dẫn chơi");
-        alert.setHeaderText("Luật chơi Checkers cơ bản");
-        alert.setContentText(
-            "1. Quân cờ chỉ di chuyển chéo về phía trước 1 ô.\n" +
-            "2. Có thể nhảy qua quân đối phương để ăn.\n" +
-            "3. Bắt buộc phải ăn quân nếu có cơ hội (Bao gồm nhảy liên hoàn).\n" +
-            "4. Khi đi đến hàng cuối cùng của đối phương, quân cờ sẽ phong Vua (King).\n" +
-            "5. Vua có thể đi lùi và tiến theo đường chéo.\n\n" +
-            "Chúc bạn chơi game vui vẻ!"
-        );
-        alert.showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/checkers/controller/guide_content.fxml"));
+            Node guideContent = loader.load();
+            
+            MessageBox.showCustom("HƯỚNG DẪN", guideContent, MessageBox.MessageButtons.OK);
+        } catch (IOException e) {
+            MessageBox.show("HƯỚNG DẪN", "Luật chơi: Ăn hết quân đối phương để giành chiến thắng!", MessageBox.MessageButtons.OK);
+        }
     }
 }
