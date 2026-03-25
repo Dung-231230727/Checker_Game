@@ -47,6 +47,7 @@ public class GameController {
     
     @FXML
     public void initialize() {
+        SoundManager.loadSounds();
         this.aiController = new AIController(this);
         
         animationOverlay = new Pane(); 
@@ -68,60 +69,77 @@ public class GameController {
     }
 
     public void applyMove(Move move) {
-        if (gameState.isGameOver()) return;
+        if (gameState.isGameOver()) return; //
 
         // Lưu lịch sử trước khi thực hiện di chuyển
-        boardHistory.push(gameState.getBoard().copy());
-        turnHistory.push(gameState.getCurrentPlayerColor());
+        boardHistory.push(gameState.getBoard().copy()); //
+        turnHistory.push(gameState.getCurrentPlayerColor()); //
 
-        StackPane startSquare = boardPanelController.getSquareAt(move.getStartRow(), move.getStartCol());
-        StackPane endSquare = boardPanelController.getSquareAt(move.getEndRow(), move.getEndCol());
+        StackPane startSquare = boardPanelController.getSquareAt(move.getStartRow(), move.getStartCol()); //
+        StackPane endSquare = boardPanelController.getSquareAt(move.getEndRow(), move.getEndCol()); //
 
-        Circle tempPiece = (Circle) startSquare.getChildren().stream()
-                .filter(node -> node instanceof Circle).findFirst().orElse(null);
+        javafx.scene.Node tempPiece = startSquare.getChildren().stream()
+                .filter(node -> node instanceof StackPane) // Quân cờ giờ là StackPane
+                .findFirst().orElse(null);
 
         if (tempPiece == null) {
-            finalizeMove(move);
+            finalizeMove(move); //
             return;
         }
 
-        final Circle finalPieceView = tempPiece;
-        boardPanelController.clearSelection(); 
-        finalPieceView.getStyleClass().add("piece-moving");
+        final javafx.scene.Node finalPieceView = tempPiece;
+        boardPanelController.clearSelection(); //
+        finalPieceView.getStyleClass().add("piece-moving"); //
 
-        Bounds startBounds = startSquare.localToScene(startSquare.getBoundsInLocal());
-        Bounds endBounds = endSquare.localToScene(endSquare.getBoundsInLocal());
+        // Lấy tọa độ của ô cờ
+        Bounds startBounds = startSquare.localToScene(startSquare.getBoundsInLocal()); //
+        Bounds endBounds = endSquare.localToScene(endSquare.getBoundsInLocal()); //
 
-        double startCenterX = startBounds.getMinX() + startBounds.getWidth() / 2;
-        double startCenterY = startBounds.getMinY() + startBounds.getHeight() / 2;
-        double endCenterX = endBounds.getMinX() + endBounds.getWidth() / 2;
-        double endCenterY = endBounds.getMinY() + endBounds.getHeight() / 2;
+        Point2D startTopLeft = animationOverlay.sceneToLocal(startBounds.getMinX(), startBounds.getMinY()); //
+        Point2D endTopLeft = animationOverlay.sceneToLocal(endBounds.getMinX(), endBounds.getMinY()); //
 
-        Point2D startPos = animationOverlay.sceneToLocal(startCenterX, startCenterY);
-        Point2D endPos = animationOverlay.sceneToLocal(endCenterX, endCenterY);
+        ((StackPane) finalPieceView).setPrefSize(startBounds.getWidth(), startBounds.getHeight()); //
 
-        startSquare.getChildren().remove(finalPieceView);
+        startSquare.getChildren().remove(finalPieceView); //
+        
         finalPieceView.setTranslateX(0);
         finalPieceView.setTranslateY(0);
-        finalPieceView.setLayoutX(startPos.getX());
-        finalPieceView.setLayoutY(startPos.getY());
+        finalPieceView.setLayoutX(startTopLeft.getX());
+        finalPieceView.setLayoutY(startTopLeft.getY());
         
         animationOverlay.getChildren().add(finalPieceView);
 
-        TranslateTransition slide = new TranslateTransition(Duration.millis(300), finalPieceView);
-        slide.setToX(endPos.getX() - startPos.getX());
-        slide.setToY(endPos.getY() - startPos.getY());
+        TranslateTransition slide = new TranslateTransition(Duration.millis(300), finalPieceView); //
+        slide.setToX(endTopLeft.getX() - startTopLeft.getX()); //
+        slide.setToY(endTopLeft.getY() - startTopLeft.getY()); //
 
+        // 1. KHI BẮT ĐẦU TRƯỢT: Chỉ phát âm thanh nếu ván đấu CHƯA kết thúc hoặc CHƯA bị Reset
+        if (gameLoop != null && gameLoop.getStatus() == javafx.animation.Animation.Status.RUNNING) {
+            if (move.isJump()) {
+                SoundManager.playCaptureSound();
+            } else {
+                SoundManager.playMoveSound();
+            }
+        }
+
+        slide.play();
+
+        // 2. KHI QUÂN CỜ HẠ CÁNH (Kết thúc trượt)
         slide.setOnFinished(e -> {
+            SoundManager.stopAllSounds(); // Luôn ngắt âm thanh khi hạ cánh
+            
             animationOverlay.getChildren().remove(finalPieceView);
             finalPieceView.setLayoutX(0);
             finalPieceView.setLayoutY(0);
             finalPieceView.setTranslateX(0);
             finalPieceView.setTranslateY(0);
-            finalizeMove(move);
+            
+            // KIỂM TRA QUAN TRỌNG: Chỉ xử lý logic tiếp theo nếu ván đấu đang thực sự diễn ra
+            // Nếu người dùng nhấn Reset, gameLoop sẽ bị dừng, ngăn AI đi quân tiếp hoặc đổi lượt
+            if (gameLoop != null && gameLoop.getStatus() == javafx.animation.Animation.Status.RUNNING) {
+                finalizeMove(move); //
+            }
         });
-        
-        slide.play();
     }
 
     private void finalizeMove(Move move) {
@@ -238,10 +256,22 @@ public class GameController {
     @FXML
     public void handleResetGame(ActionEvent event) {
         try {
-            if (gameLoop != null) gameLoop.stop(); 
-            if (aiController != null) aiController.stop(); 
-            
+            // 1. Dừng AI ngay lập tức để nó không tính toán và gọi lệnh Move nữa
+            if (aiController != null) {
+                aiController.stop(); 
+            }
+
+            // 2. Dừng mọi âm thanh đang phát
+            SoundManager.stopAllSounds();
+
+            // 3. Quan trọng: Dừng bộ đếm thời gian (Timeline)
+            if (gameLoop != null) {
+                gameLoop.stop();
+            }
+
+            // 4. Quay về màn hình chính
             com.checkers.App.setRoot("controller/main_menu");
+            
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
@@ -288,25 +318,32 @@ public class GameController {
 
         if (aiController != null) aiController.stop();
 
-        // Lùi 2 bước nếu đánh với máy
+        // Lùi 2 bước nếu đánh với máy (để về đúng lượt của người)
         boolean isPvE = (gameState.getPlayer1().getType() != gameState.getPlayer2().getType());
         int stepsToUndo = isPvE ? 2 : 1;
 
-        for (int i = 0; i < stepsToUndo; i++) {
-            if (!boardHistory.isEmpty()) {
+        // Chỉ lùi nếu có đủ số bước trong lịch sử
+        if (boardHistory.size() >= stepsToUndo) {
+            for (int i = 0; i < stepsToUndo; i++) {
                 gameState.setBoard(boardHistory.pop()); 
                 gameState.setCurrentPlayerColor(turnHistory.pop()); 
             }
+            
+            boardPanelController.clearSelection();
+            boardPanelController.clearForcedPiece();
+            boardPanelController.refreshBoard(gameState.getBoard());
+            
+            // Reset thời gian lượt đi
+            player1TurnTime = turnTimeLimit;
+            player2TurnTime = turnTimeLimit;
+            player1TimerLabel.setText(turnTimeLimit + "s");
+            player2TimerLabel.setText(turnTimeLimit + "s");
+            
+            // Khởi động lại AI nếu sau khi lùi lại là lượt của AI (trường hợp lùi 1 bước trong PvE)
+            if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
+                aiController.processAITurn(gameState);
+            }
         }
-
-        boardPanelController.clearSelection();
-        boardPanelController.clearForcedPiece();
-        boardPanelController.refreshBoard(gameState.getBoard());
-        
-        player1TurnTime = turnTimeLimit;
-        player2TurnTime = turnTimeLimit;
-        player1TimerLabel.setText(turnTimeLimit + "s");
-        player2TimerLabel.setText(turnTimeLimit + "s");
     }
 
     @FXML

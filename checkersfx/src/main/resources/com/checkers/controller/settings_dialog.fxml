@@ -41,6 +41,10 @@
                     <Circle fx:id="dotVibration" radius="10" styleClass="toggle-dot" translateX="-12"/>
                 </StackPane>
             </HBox>
+
+            <HBox alignment="CENTER_RIGHT">
+                <Button text="Áp dụng" onAction="#handleApply" styleClass="apply-button"/>
+            </HBox>
         </VBox>
     </VBox>
 </StackPane>

@@ -7,41 +7,52 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
+import java.util.prefs.Preferences; // Import thư viện lưu trữ
 
 public class SettingsController {
-    // Khai báo các ID khớp với fx:id trong FXML
-    @FXML private StackPane toggleSound;
-    @FXML private Circle dotSound;
+    @FXML private StackPane toggleSound, toggleMusic, toggleVibration;
+    @FXML private Circle dotSound, dotMusic, dotVibration;
+    @FXML private VBox rootBox;
+
+    private boolean isSoundOn, isMusicOn, isVibrationOn;
+    private double xOffset = 0, yOffset = 0;
     
-    @FXML private StackPane toggleMusic;
-    @FXML private Circle dotMusic;
-    
-    @FXML private StackPane toggleVibration;
-    @FXML private Circle dotVibration;
-
-    @FXML private VBox rootBox;;
-
-    private boolean isSoundOn = false;
-    private boolean isMusicOn = false;
-    private boolean isVibrationOn = false;
-
-    private double xOffset = 0;
-    private double yOffset = 0;
+    // Khởi tạo Preferences cho class này
+    private Preferences prefs = Preferences.userNodeForPackage(SettingsController.class);
 
     @FXML
     public void initialize() {
-        // Ghi nhận vị trí chuột khi vừa bấm vào cửa sổ
+        // 1. Tải các giá trị đã lưu (mặc định là true nếu chưa có)
+        isSoundOn = prefs.getBoolean("sound", true);
+        isMusicOn = prefs.getBoolean("music", true);
+        isVibrationOn = prefs.getBoolean("vibration", true);
+
+        // 2. Cập nhật giao diện nút gạt theo trạng thái đã lưu
+        updateToggleUI(isSoundOn, toggleSound, dotSound);
+        updateToggleUI(isMusicOn, toggleMusic, dotMusic);
+        updateToggleUI(isVibrationOn, toggleVibration, dotVibration);
+
+        // 3. Logic kéo thả cửa sổ
         rootBox.setOnMousePressed(event -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
         });
-        
-        // Di chuyển cửa sổ theo vị trí chuột khi kéo
         rootBox.setOnMouseDragged(event -> {
             Stage stage = (Stage) rootBox.getScene().getWindow();
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
+    }
+
+    // Hàm cập nhật UI không dùng hiệu ứng (dùng khi mới mở dialog)
+    private void updateToggleUI(boolean isOn, StackPane track, Circle dot) {
+        if (isOn) {
+            dot.setTranslateX(12);
+            track.getStyleClass().add("toggle-track-on");
+        } else {
+            dot.setTranslateX(-12);
+            track.getStyleClass().remove("toggle-track-on");
+        }
     }
 
     @FXML
@@ -50,7 +61,6 @@ public class SettingsController {
         animateToggle(isSoundOn, toggleSound, dotSound);
     }
 
-    // BỔ SUNG PHƯƠNG THỨC NÀY ĐỂ HẾT LỖI DÒNG 33
     @FXML
     private void handleToggleMusic() {
         isMusicOn = !isMusicOn;
@@ -63,11 +73,23 @@ public class SettingsController {
         animateToggle(isVibrationOn, toggleVibration, dotVibration);
     }
 
+    @FXML
+    private void handleApply() {
+        // Chỉ lưu cài đặt khi người chơi ấn "Áp dụng"
+        prefs.putBoolean("sound", isSoundOn);
+        prefs.putBoolean("music", isMusicOn);
+        prefs.putBoolean("vibration", isVibrationOn);
+        
+        System.out.println("Đã lưu cài đặt!");
+        onClose(); // Lưu xong thì tự động đóng hộp thoại
+    }
+    
     private void animateToggle(boolean isOn, StackPane track, Circle dot) {
         TranslateTransition transition = new TranslateTransition(Duration.millis(200), dot);
         if (isOn) {
             transition.setToX(12);
-            track.getStyleClass().add("toggle-track-on");
+            if (!track.getStyleClass().contains("toggle-track-on"))
+                track.getStyleClass().add("toggle-track-on");
         } else {
             transition.setToX(-12);
             track.getStyleClass().remove("toggle-track-on");
@@ -77,10 +99,8 @@ public class SettingsController {
 
     @FXML
     private void onClose() {
-        // Lấy cửa sổ hiện tại (dựa vào một Node bất kỳ, ví dụ toggleSound) và đóng nó
-        if (toggleSound != null && toggleSound.getScene() != null) {
-            Stage stage = (Stage) toggleSound.getScene().getWindow();
-            stage.close();
+        if (rootBox.getScene() != null) {
+            ((Stage) rootBox.getScene().getWindow()).close();
         }
     }
 }

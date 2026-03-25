@@ -113,13 +113,18 @@ public class BoardController {
                     
                     // KIỂM TRA ĐỂ ĐỔI MÀU VIỀN
                     if (row == selectedRow && col == selectedCol) {
-                        // Trích xuất Circle bên trong wrapper để tô màu viền
-                        Circle innerCircle = (Circle) pieceView.getChildren().get(0);
-                        if (isHintMode) {
-                            innerCircle.getStyleClass().add("piece-hinted"); 
-                        } else {
-                            innerCircle.getStyleClass().add("piece-selected"); 
-                        }
+                        // Tìm Circle bên trong StackPane một cách an toàn
+                        pieceView.getChildren().stream()
+                                 .filter(node -> node instanceof Circle)
+                                 .findFirst()
+                                 .ifPresent(node -> {
+                                     Circle innerCircle = (Circle) node;
+                                     if (isHintMode) {
+                                         innerCircle.getStyleClass().add("piece-hinted"); 
+                                     } else {
+                                         innerCircle.getStyleClass().add("piece-selected"); 
+                                     }
+                                 });
                     }
                     
                     square.getChildren().add(pieceView);
@@ -135,6 +140,7 @@ public class BoardController {
                             square.heightProperty().divide(6)
                         ));
                         square.getChildren().add(dot);
+                        square.setStyle("-fx-cursor: hand;");
                     }
                 }
 
@@ -186,8 +192,11 @@ public class BoardController {
                     clearSelection();
                     gameCtrl.applyMove(move);
                 }
+            } else {
+                // Nếu click sai chỗ khi đang nhảy liên hoàn, vẽ lại để nhắc nhở (vẫn giữ trạng thái chọn)
+                refreshBoard(state.getBoard());
             }
-            return; // Thoát ngay, không cho chạy phần code chọn quân tự do bên dưới
+            return; // Thoát ngay
         }
         
         Board board = state.getBoard();
