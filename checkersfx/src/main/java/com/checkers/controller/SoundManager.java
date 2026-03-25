@@ -11,8 +11,8 @@ public class SoundManager {
     // Hàm này sẽ tải âm thanh vào bộ nhớ (Gọi 1 lần lúc bật game)
     public static void loadSounds() {
         try {
-            moveSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/move.mp3").toExternalForm());
-            captureSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/capture.mp3").toExternalForm());
+            moveSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/move1.mp3").toExternalForm());
+            captureSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/move.mp3").toExternalForm());
         } catch (Exception e) {
             System.err.println("Cảnh báo: Không tìm thấy file âm thanh trong assets/sounds/");
         }

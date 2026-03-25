@@ -69,54 +69,50 @@ public class GameController {
     }
 
     public void applyMove(Move move) {
-        if (gameState.isGameOver()) return; //
+        if (gameState.isGameOver()) return;
 
-        // Lưu lịch sử trước khi thực hiện di chuyển
-        boardHistory.push(gameState.getBoard().copy()); //
-        turnHistory.push(gameState.getCurrentPlayerColor()); //
+        // 1. Lưu lịch sử ván đấu
+        boardHistory.push(gameState.getBoard().copy());
+        turnHistory.push(gameState.getCurrentPlayerColor());
 
-        StackPane startSquare = boardPanelController.getSquareAt(move.getStartRow(), move.getStartCol()); //
-        StackPane endSquare = boardPanelController.getSquareAt(move.getEndRow(), move.getEndCol()); //
+        StackPane startSquare = boardPanelController.getSquareAt(move.getStartRow(), move.getStartCol());
+        StackPane endSquare = boardPanelController.getSquareAt(move.getEndRow(), move.getEndCol());
 
         javafx.scene.Node tempPiece = startSquare.getChildren().stream()
-                .filter(node -> node instanceof StackPane) // Quân cờ giờ là StackPane
+                .filter(node -> node instanceof StackPane) 
                 .findFirst().orElse(null);
 
         if (tempPiece == null) {
-            finalizeMove(move); //
+            finalizeMove(move);
             return;
         }
 
         final javafx.scene.Node finalPieceView = tempPiece;
-        boardPanelController.clearSelection(); //
-        finalPieceView.getStyleClass().add("piece-moving"); //
+        boardPanelController.clearSelection();
+        finalPieceView.getStyleClass().add("piece-moving");
 
-        // Lấy tọa độ của ô cờ
-        Bounds startBounds = startSquare.localToScene(startSquare.getBoundsInLocal()); //
-        Bounds endBounds = endSquare.localToScene(endSquare.getBoundsInLocal()); //
+        // 2. Tính toán tọa độ và kích thước chuẩn
+        Bounds startBounds = startSquare.localToScene(startSquare.getBoundsInLocal());
+        Bounds endBounds = endSquare.localToScene(endSquare.getBoundsInLocal());
 
-        Point2D startTopLeft = animationOverlay.sceneToLocal(startBounds.getMinX(), startBounds.getMinY()); //
-        Point2D endTopLeft = animationOverlay.sceneToLocal(endBounds.getMinX(), endBounds.getMinY()); //
+        Point2D startTopLeft = animationOverlay.sceneToLocal(startBounds.getMinX(), startBounds.getMinY());
+        Point2D endTopLeft = animationOverlay.sceneToLocal(endBounds.getMinX(), endBounds.getMinY());
 
-        ((StackPane) finalPieceView).setPrefSize(startBounds.getWidth(), startBounds.getHeight()); //
+        ((StackPane) finalPieceView).setPrefSize(startBounds.getWidth(), startBounds.getHeight());
 
-        startSquare.getChildren().remove(finalPieceView); //
-        
-        finalPieceView.setTranslateX(0);
-        finalPieceView.setTranslateY(0);
+        startSquare.getChildren().remove(finalPieceView);
         finalPieceView.setLayoutX(startTopLeft.getX());
         finalPieceView.setLayoutY(startTopLeft.getY());
-        
         animationOverlay.getChildren().add(finalPieceView);
 
-        TranslateTransition slide = new TranslateTransition(Duration.millis(300), finalPieceView); //
-        slide.setToX(endTopLeft.getX() - startTopLeft.getX()); //
-        slide.setToY(endTopLeft.getY() - startTopLeft.getY()); //
+        TranslateTransition slide = new TranslateTransition(Duration.millis(300), finalPieceView);
+        slide.setToX(endTopLeft.getX() - startTopLeft.getX());
+        slide.setToY(endTopLeft.getY() - startTopLeft.getY());
 
-        // 1. KHI BẮT ĐẦU TRƯỢT: Chỉ phát âm thanh nếu ván đấu CHƯA kết thúc hoặc CHƯA bị Reset
+        // 3. Phát âm thanh khi bắt đầu trượt
         if (gameLoop != null && gameLoop.getStatus() == javafx.animation.Animation.Status.RUNNING) {
             if (move.isJump()) {
-                SoundManager.playCaptureSound();
+                SoundManager.playCaptureSound(); 
             } else {
                 SoundManager.playMoveSound();
             }
@@ -124,22 +120,53 @@ public class GameController {
 
         slide.play();
 
-        // 2. KHI QUÂN CỜ HẠ CÁNH (Kết thúc trượt)
+        // 4. Xử lý khi kết thúc trượt
         slide.setOnFinished(e -> {
-            SoundManager.stopAllSounds(); // Luôn ngắt âm thanh khi hạ cánh
-            
+            // Xóa quân cờ khỏi lớp hiệu ứng ngay khi trượt xong
             animationOverlay.getChildren().remove(finalPieceView);
-            finalPieceView.setLayoutX(0);
-            finalPieceView.setLayoutY(0);
-            finalPieceView.setTranslateX(0);
-            finalPieceView.setTranslateY(0);
             
-            // KIỂM TRA QUAN TRỌNG: Chỉ xử lý logic tiếp theo nếu ván đấu đang thực sự diễn ra
-            // Nếu người dùng nhấn Reset, gameLoop sẽ bị dừng, ngăn AI đi quân tiếp hoặc đổi lượt
-            if (gameLoop != null && gameLoop.getStatus() == javafx.animation.Animation.Status.RUNNING) {
-                finalizeMove(move); //
-            }
+            // VẼ LẠI BÀN CỜ NGAY LẬP TỨC: Quân cờ xuất hiện ở ô đích ngay, không bị "mất tích"
+            boolean wasPromotion = Move.isPromotionMove(gameState.getBoard(), move);
+            gameState.getBoard().applyMove(move);
+            boardPanelController.refreshBoard(gameState.getBoard());
+
+            // 5. KHOẢNG NGHỊ 500MS: Vừa để người chơi nhìn, vừa để âm thanh phát hết hoàn toàn
+            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.millis(500));
+            pause.setOnFinished(event -> {
+                // Ngắt âm thanh sau khi đã nghỉ xong
+                SoundManager.stopAllSounds(); 
+
+                // Chỉ xử lý logic tiếp theo nếu ván đấu chưa bị Reset
+                if (gameLoop != null && gameLoop.getStatus() == javafx.animation.Animation.Status.RUNNING) {
+                    handleNextTurnLogic(move, wasPromotion); 
+                }
+            });
+            pause.play();
         });
+    }
+
+    // Hàm phụ để xử lý chuyển lượt hoặc nhảy tiếp
+    private void handleNextTurnLogic(Move move, boolean wasPromotion) {
+        boolean canJumpAgain = move.isJump() && !wasPromotion && 
+                            MoveController.canJumpAgain(gameState.getBoard(), move.getEndRow(), move.getEndCol());
+
+        if (canJumpAgain) {
+            boardPanelController.setForcedPiece(move.getEndRow(), move.getEndCol());
+            if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
+                aiController.processAITurn(gameState);
+            }
+        } else {
+            boardPanelController.clearForcedPiece();
+            player1TurnTime = turnTimeLimit;
+            player2TurnTime = turnTimeLimit;
+            player1TimerLabel.setText(player1TurnTime + "s");
+            player2TimerLabel.setText(player2TurnTime + "s");
+
+            gameState.switchTurn();
+            if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
+                aiController.processAITurn(gameState);
+            }
+        }
     }
 
     private void finalizeMove(Move move) {

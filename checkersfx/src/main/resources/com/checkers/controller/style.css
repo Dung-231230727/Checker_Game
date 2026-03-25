@@ -100,8 +100,8 @@
 
 /* Quân cờ chung */
 .piece {
-    /* Đổi màu viền đậm hơn (màu đen nâu hoặc xanh đen) */
-    -fx-stroke: #002040; 
+    /* Đổi màu viền đậm hơn */
+    -fx-stroke: #5D0E35; 
     
     /* Độ dày viền: tăng lên 2.5px hoặc 3px tùy sở thích của bạn */
     -fx-stroke-width: 2.5px; 
