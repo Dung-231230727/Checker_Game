@@ -1,7 +1,10 @@
 package com.checkers.controller;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Stack;
+
+import com.checkers.ai.AIConfig;
 import com.checkers.model.*;
 import com.checkers.utils.MessageBox;
 
@@ -12,6 +15,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -32,7 +36,7 @@ import javafx.scene.control.Button;
 
 public class GameController {
     @FXML private StackPane centerContainer; 
-    @FXML private BoardController boardPanelController;
+    private BoardController boardPanelController;
 
     private GameState gameState;
     private AIController aiController;
@@ -55,8 +59,11 @@ public class GameController {
     private Stack<Board> boardHistory = new Stack<>();
     private Stack<Types.PlayerColor> turnHistory = new Stack<>();
     
-    @FXML private Button btnStart, btnExit, btnPause, btnUndo, btnHint, btnSurrender;
+    @FXML private Button btnStart, btnExit, btnPause, btnUndo, btnHint, btnSurrender, btnMatchSettings;
 
+    private AIConfig ai1Config = new AIConfig(AIConfig.Mode.BALANCED, 5); 
+    private AIConfig ai2Config = new AIConfig(AIConfig.Mode.BALANCED, 5); 
+    private AIConfig hintConfig = new AIConfig(AIConfig.Mode.BALANCED, 5);
 
     private int currentGameMode = 1; 
     @FXML
@@ -68,17 +75,31 @@ public class GameController {
         animationOverlay.setMouseTransparent(true);
         centerContainer.getChildren().add(animationOverlay);
         
-        if (boardPanelController != null) {
-            boardPanelController.setGameController(this);
-            NumberBinding size = Bindings.min(
-                centerContainer.widthProperty(), 
-                centerContainer.heightProperty()
-            );
+        // Manually load the board panel to get the BoardController
+        try {
+            FXMLLoader boardLoader = new FXMLLoader(getClass().getResource("/com/checkers/controller/board_panel.fxml"));
+            GridPane boardGrid = boardLoader.load();
+            this.boardPanelController = boardLoader.getController();
             
-            boardPanelController.getBoardGrid().prefWidthProperty().bind(size);
-            boardPanelController.getBoardGrid().prefHeightProperty().bind(size);
-            boardPanelController.getBoardGrid().maxWidthProperty().bind(size);
-            boardPanelController.getBoardGrid().maxHeightProperty().bind(size);
+            // Add the board grid to the center container
+            centerContainer.getChildren().add(0, boardGrid);
+            
+            // Set up the board controller
+            if (boardPanelController != null) {
+                boardPanelController.setGameController(this);
+                NumberBinding size = Bindings.min(
+                    centerContainer.widthProperty(), 
+                    centerContainer.heightProperty()
+                );
+                
+                boardPanelController.getBoardGrid().prefWidthProperty().bind(size);
+                boardPanelController.getBoardGrid().prefHeightProperty().bind(size);
+                boardPanelController.getBoardGrid().maxWidthProperty().bind(size);
+                boardPanelController.getBoardGrid().maxHeightProperty().bind(size);
+            }
+        } catch (IOException e) {
+            System.err.println("Could not load board_panel.fxml: " + e.getMessage());
+            e.printStackTrace();
         }
 
         setUIPplaying(false);
@@ -224,8 +245,9 @@ public class GameController {
         // mode 0: Người vs Người | mode 1: Người vs Máy | mode 2: Máy vs Máy
         Player p1 = (mode == 2) ? new Player("AI Trắng", Types.PlayerColor.WHITE, Types.PlayerType.AI) : 
                                   new Player("Player 1", Types.PlayerColor.WHITE, Types.PlayerType.HUMAN);
-        Player p2 = (mode == 0) ? new Player("Player 2", Types.PlayerColor.BLUE, Types.PlayerType.HUMAN) : 
-                                  new Player("AI Xanh", Types.PlayerColor.BLUE, Types.PlayerType.AI);
+        Player p2 = (mode == 0) ? new Player("Player 2", Types.PlayerColor.BLUE, Types.PlayerType.HUMAN) :
+             (mode == 1) ? new Player("AI Xanh", Types.PlayerColor.BLUE, Types.PlayerType.AI) :
+             new Player("AI Xanh", Types.PlayerColor.BLUE, Types.PlayerType.AI);
         
         this.gameState = new GameState(p1, p2);
         
@@ -343,7 +365,7 @@ public class GameController {
         Label timerLabel = new Label("Thời gian tạm dừng còn lại: 05:00");
         timerLabel.setStyle("-fx-text-fill: #8E1451; -fx-font-size: 18px; -fx-font-weight: bold;");
         
-        Label msgLabel = new Label("Chọn 'Đồng ý' để tiếp tục hoặc 'Hủy bỏ' để thoát ván đấu.");
+        Label msgLabel = new Label("Chọn 'Tiếp tục' để tiếp tục hoặc 'Hủy bỏ' để thoát ván đấu.");
         msgLabel.setStyle("-fx-text-fill: #1a1a1a;"); // Màu đen để nổi trên nền trắng
         msgLabel.setWrapText(true);
 
@@ -368,7 +390,7 @@ public class GameController {
 
         // 4. Hiển thị MessageBox với 2 nút YES_NO
         // true = Tiếp tục (Đồng ý), false = Hủy bỏ (Hủy bỏ)
-        boolean resume = MessageBox.showCustom("TẠM DỪNG", pauseBox, MessageBox.MessageButtons.YES_NO);
+        boolean resume = MessageBox.showCustom("TẠM DỪNG", pauseBox, MessageBox.MessageButtons.CONTINUE_CANCEL);
         
         pauseTimeline.stop();
 
@@ -499,6 +521,9 @@ public class GameController {
         btnExit.setVisible(!isPlaying);
         btnExit.setManaged(!isPlaying);
 
+        btnMatchSettings.setVisible(true);
+        btnMatchSettings.setManaged(true);
+
         // Kiểm tra nếu là chế độ Máy vs Máy (Mode 2)
         boolean isEvE = (currentGameMode == 2);
 
@@ -517,9 +542,53 @@ public class GameController {
         btnSurrender.setManaged(isPlaying && !isEvE);
     }
 
+    public void setBoardController(BoardController boardCtrl) {
+        this.boardPanelController = boardCtrl;
+    }
+
     private boolean isGameStarted = false;
 
     public boolean isGameStarted() {
         return isGameStarted;
+    }
+
+    // Khởi tạo mặc định
+    public AIConfig getAi1Config() { return ai1Config; }
+    public AIConfig getAi2Config() { return ai2Config; }
+    public AIConfig getHintConfig() { return hintConfig; }
+
+    @FXML
+    private void handleOpenMatchSettings(ActionEvent event) {
+        try {
+            // Kiểm tra đường dẫn file FXML cẩn thận
+            URL fxmlLocation = getClass().getResource("/com/checkers/controller/match_settings.fxml");
+            if (fxmlLocation == null) {
+                System.err.println("Không tìm thấy file match_settings.fxml!");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            Node root = loader.load();
+            
+            MatchSettingsController ctrl = loader.getController();
+            ctrl.init(ai1Config, ai2Config, hintConfig, currentGameMode);
+
+            MessageBox.showCustom("THIẾT LẬP CHIẾN THUẬT AI", root, MessageBox.MessageButtons.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setInitialConfigs(AIConfig ai1, AIConfig ai2, AIConfig hint) {
+        // Cập nhật giá trị cho 3 biến config trong GameController
+        // giúp đồng bộ hóa những gì người dùng đã chỉnh ở Menu
+        this.ai1Config.setMode(ai1.getCurrentMode());
+        this.ai1Config.setSearchDepth(ai1.getSearchDepth());
+
+        this.ai2Config.setMode(ai2.getCurrentMode());
+        this.ai2Config.setSearchDepth(ai2.getSearchDepth());
+
+        this.hintConfig.setMode(hint.getCurrentMode());
+        this.hintConfig.setSearchDepth(hint.getSearchDepth());
     }
 }

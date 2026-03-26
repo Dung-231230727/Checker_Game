@@ -46,7 +46,6 @@
 
     <center>
         <StackPane fx:id="centerContainer">
-            <fx:include source="board_panel.fxml" fx:id="boardPanel" />
         </StackPane>
     </center>
 
@@ -56,17 +55,15 @@
                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
             </padding>
 
-            <Label style="-fx-font-size: 35px; -fx-cursor: hand;" text="⚙" onMouseClicked="#handleOpenSettings"/>
+            <Button text="Cài đặt hệ thống" onAction="#handleOpenSettings" styleClass="game-button"/>
+            
+            <Button fx:id="btnMatchSettings" text="Thiết lập máy" 
+                    onAction="#handleOpenMatchSettings" styleClass="game-button"/>
             
             <Region HBox.hgrow="ALWAYS" /> 
             
             <Button fx:id="btnStart" styleClass="game-button" text="Bắt đầu" onAction="#handleStartGame"/>
             <Button fx:id="btnExit" styleClass="game-button" text="Hủy bỏ ván chơi" onAction="#handleExitToMenu"/>
-            
-            <Button fx:id="btnPause" visible="false" managed="false" styleClass="game-button" text="Tạm dừng" onAction="#handlePause"/>
-            <Button fx:id="btnUndo" visible="false" managed="false" styleClass="game-button" text="Đi lại" onAction="#handleUndoMove"/>
-            <Button fx:id="btnHint" visible="false" managed="false" styleClass="game-button" text="Gợi ý" onAction="#handleShowHint"/>
-            <Button fx:id="btnSurrender" visible="false" managed="false" styleClass="game-button" text="Đầu hàng" onAction="#handleSurrender"/>
             
             <Region HBox.hgrow="ALWAYS" /> 
         </HBox>

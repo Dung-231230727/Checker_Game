@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="20" styleClass="settings-dialog" stylesheets="@style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.controller.MatchSettingsController">
+    
+    <padding>
+        <Insets bottom="20" left="30" right="30" top="20" />
+    </padding>
+
+    <HBox alignment="CENTER" spacing="30">
+        <VBox fx:id="sectionAI1" prefWidth="250" spacing="15" styleClass="ai-config-section">
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="MÁY TRẮNG (AI 1)" />
+            
+            <VBox spacing="5">
+                <Label text="Chế độ đánh:" />
+                <ComboBox fx:id="cbModeAI1" maxWidth="Infinity" />
+            </VBox>
+
+            <VBox spacing="5">
+                <HBox spacing="10">
+                    <Label text="Độ sâu tính toán:" />
+                    <Label fx:id="lblDepthAI1" style="-fx-text-fill: #8E1451; -fx-font-weight: bold;" text="5" />
+                </HBox>
+                <Slider fx:id="sliderDepthAI1" majorTickUnit="1" max="8" min="1" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="5" />
+            </VBox>
+        </VBox>
+
+        <VBox fx:id="sectionAI2" prefWidth="250" spacing="15" styleClass="ai-config-section">
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #3498db;" text="MÁY XANH (AI 2)" />
+            
+            <VBox spacing="5">
+                <Label text="Chế độ đánh:" />
+                <ComboBox fx:id="cbModeAI2" maxWidth="Infinity" />
+            </VBox>
+
+            <VBox spacing="5">
+                <HBox spacing="10">
+                    <Label text="Độ sâu tính toán:" />
+                    <Label fx:id="lblDepthAI2" style="-fx-text-fill: #8E1451; -fx-font-weight: bold;" text="5" />
+                </HBox>
+                <Slider fx:id="sliderDepthAI2" majorTickUnit="1" max="8" min="1" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="5" />
+            </VBox>
+        </VBox>
+    </HBox>
+
+    <Separator />
+
+    <VBox maxWidth="400" spacing="15" styleClass="ai-config-section">
+        <Label style="-fx-font-weight: bold; -fx-text-fill: #27ae60;" text="HỆ THỐNG GỢI Ý" />
+        <GridPane hgap="20" vgap="10">
+            <Label text="Chế độ gợi ý:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <ComboBox fx:id="cbModeHint" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            
+            <Label text="Độ thông minh:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Slider fx:id="sliderDepthHint" max="8" min="1" prefWidth="120" snapToTicks="true" value="6" />
+                <Label fx:id="lblDepthHint" style="-fx-font-weight: bold;" text="6" />
+            </HBox>
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+    </VBox>
+
+</VBox>

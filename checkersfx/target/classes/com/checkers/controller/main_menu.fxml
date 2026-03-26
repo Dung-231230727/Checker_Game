@@ -18,6 +18,7 @@
     <Button mnemonicParsing="false" onAction="#handlePvP" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Người Vs Người" />
     <Button mnemonicParsing="false" onAction="#handlePvE" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Người Vs Máy" />
     <Button mnemonicParsing="false" onAction="#handleEvE" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Máy Vs Máy" />
+    <Button mnemonicParsing="false" onAction="#handleOpenMatchSettings" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Thiết lập máy" fx:id="btnMatchSettings"/>
     <Button mnemonicParsing="false" onAction="#handleSettings" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Cài đặt" />
     <Button mnemonicParsing="false" onAction="#handleInstructions" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Hướng dẫn" />
     <Button mnemonicParsing="false" onAction="#onExit" prefHeight="55.0" prefWidth="280.0" styleClass="menu-button" text="Thoát" />

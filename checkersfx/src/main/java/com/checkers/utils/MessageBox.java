@@ -22,7 +22,8 @@ public class MessageBox {
 
     public enum MessageButtons {
         OK,
-        YES_NO
+        YES_NO,
+        CONTINUE_CANCEL
     }
 
     /**
@@ -88,6 +89,18 @@ public class MessageBox {
                 btnNo.setOnAction(e -> { result[0] = false; stage.close(); });
 
                 controller.getFooterArea().getChildren().addAll(btnYes, btnNo);
+            } else if (buttonType == MessageButtons.CONTINUE_CANCEL) {
+                Button btnContinue = new Button("Tiếp tục");
+                btnContinue.getStyleClass().add("apply-button");
+                btnContinue.setMinWidth(100);
+                btnContinue.setOnAction(e -> { result[0] = true; stage.close(); });
+
+                Button btnCancel = new Button("Hủy bỏ");
+                btnCancel.getStyleClass().add("close-button");
+                btnCancel.setMinWidth(100);
+                btnCancel.setOnAction(e -> { result[0] = false; stage.close(); });
+
+                controller.getFooterArea().getChildren().addAll(btnContinue, btnCancel);
             }
 
             Scene scene = new Scene(root);

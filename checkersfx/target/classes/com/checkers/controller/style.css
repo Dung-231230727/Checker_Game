@@ -267,3 +267,28 @@
     -fx-background-color: #5D0E35; /* Đậm hơn khi lướt chuột */
 }
 
+/* Khối bao quanh mỗi khu vực AI */
+.ai-config-section {
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 15;
+    -fx-border-color: #dddddd;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+/* Tùy chỉnh Slider để trông hiện đại hơn */
+.slider .track {
+    -fx-background-color: #ddd;
+    -fx-pref-height: 6;
+}
+.slider .thumb {
+    -fx-background-color: #8E1451;
+}
+
+/* ComboBox trong phần cài đặt */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+}

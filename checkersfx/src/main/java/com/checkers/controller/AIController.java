@@ -1,6 +1,7 @@
 package com.checkers.controller;
 
 import com.checkers.ai.AlphaBetaPruning;
+import com.checkers.ai.AIConfig;
 import com.checkers.model.*;
 import javafx.concurrent.Task;
 import javafx.application.Platform;
@@ -17,10 +18,9 @@ public class AIController {
     }
 
     /**
-     * Xử lý lượt đi của AI.
+     * Xử lý lượt đi của AI với cấu hình động lấy từ GameController.
      */
     public void processAITurn(GameState state) {
-        // Kiểm tra điều kiện: Game chưa kết thúc, đúng lượt AI và AI không đang suy nghĩ
         if (state == null || state.isGameOver() || 
             state.getCurrentPlayer().getType() != Types.PlayerType.AI || isThinking) {
             return;
@@ -28,31 +28,31 @@ public class AIController {
 
         isThinking = true;
         
-        // Tạo bản sao dữ liệu để AI tính toán độc lập với luồng UI
         final Board snapshot = state.getBoard().copy();
         final Types.PlayerColor aiColor = state.getCurrentPlayer().getColor();
 
-        // Tạo một khoảng dừng nhỏ (500ms) để người chơi kịp nhìn thấy nước đi trước đó
+        // --- LẤY CẤU HÌNH ĐỘNG TỪ VIEW THÔNG QUA GAMECONTROLLER ---
+        // Phân biệt máy 1 (Thường là Trắng) và máy 2 (Thường là Xanh) để lấy đúng Mode/Depth
+        final AIConfig currentConfig = (aiColor == Types.PlayerColor.WHITE) ? 
+                                        gameCtrl.getAi1Config() : gameCtrl.getAi2Config();
+
         PauseTransition pause = new PauseTransition(Duration.millis(500));
         pause.setOnFinished(e -> {
-            // Chạy thuật toán AI trên một luồng phụ (Thread) để không làm đơ giao diện
             Task<Move> aiTask = new Task<>() {
                 @Override
                 protected Move call() {
-                    return ai.getBestMove(snapshot, aiColor);
+                    // Truyền thêm currentConfig vào hàm getBestMove
+                    return ai.getBestMove(snapshot, aiColor, currentConfig);
                 }
             };
 
-            // Khi AI tính toán xong
             aiTask.setOnSucceeded(event -> {
                 isThinking = false;
                 Move bestMove = aiTask.getValue();
                 
                 if (bestMove != null) {
-                    // Thực hiện nước đi thông qua GameController
                     Platform.runLater(() -> gameCtrl.applyMove(bestMove));
                 } else {
-                    // Nếu không tìm thấy nước đi (AI thua), kết thúc game
                     Platform.runLater(() -> gameCtrl.handleGameOver());
                 }
             });
@@ -68,26 +68,28 @@ public class AIController {
     }
 
     /**
-     * Chức năng gợi ý nước đi cho người chơi.
+     * Chức năng gợi ý sử dụng cấu hình riêng cho Hint.
      */
     public void showHint(GameState state) {
         if (state == null || state.isGameOver() || isThinking) return;
 
         final Board snapshot = state.getBoard().copy();
         final Types.PlayerColor humanColor = state.getCurrentPlayer().getColor();
+        
+        // --- LẤY CẤU HÌNH RIÊNG CHO GỢI Ý ---
+        final AIConfig hConfig = gameCtrl.getHintConfig();
 
         Task<Move> hintTask = new Task<>() {
             @Override
             protected Move call() {
-                // Sử dụng AI để tìm nước đi tốt nhất cho người chơi
-                return ai.getBestMove(snapshot, humanColor);
+                // Truyền cấu hình gợi ý (thường có độ sâu cao hơn) vào AI
+                return ai.getBestMove(snapshot, humanColor, hConfig);
             }
         };
 
         hintTask.setOnSucceeded(e -> {
             Move hint = hintTask.getValue();
             if (hint != null) {
-                // Hiển thị gợi ý lên bàn cờ thông qua GameController
                 gameCtrl.updateViewSelection(hint.getStartRow(), hint.getStartCol(), java.util.List.of(hint));
             }
         });
