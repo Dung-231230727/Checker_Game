@@ -205,6 +205,7 @@ public class GameController {
             player2TimerLabel.setText(player2TurnTime + "s");
 
             gameState.switchTurn();
+            updateUIForTurn();
             if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
                 aiController.processAITurn(gameState);
             }
@@ -234,6 +235,7 @@ public class GameController {
             player2TimerLabel.setText(player2TurnTime + "s");
 
             gameState.switchTurn();
+            updateUIForTurn();
             if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
                 aiController.processAITurn(gameState);
             }
@@ -573,7 +575,8 @@ public class GameController {
             MatchSettingsController ctrl = loader.getController();
             ctrl.init(ai1Config, ai2Config, hintConfig, currentGameMode);
 
-            MessageBox.showCustom("THIẾT LẬP CHIẾN THUẬT AI", root, MessageBox.MessageButtons.OK);
+            MessageBox.showCustom("THIẾT LẬP MÁY", root, MessageBox.MessageButtons.OK);
+            ctrl.save(ai1Config, ai2Config, hintConfig);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -590,5 +593,16 @@ public class GameController {
 
         this.hintConfig.setMode(hint.getCurrentMode());
         this.hintConfig.setSearchDepth(hint.getSearchDepth());
+    }
+
+    public void updateUIForTurn() {
+        if (gameState == null || gameState.isGameOver()) return;
+        
+        boolean isHumanTurn = (gameState.getCurrentPlayer().getType() == Types.PlayerType.HUMAN);
+        boolean isEvE = (currentGameMode == 2);
+
+        // Chỉ cho phép ấn Gợi ý và Đi lại khi đang là lượt của NGƯỜI và không phải chế độ Máy vs Máy
+        btnHint.setDisable(!isHumanTurn || isEvE);
+        btnUndo.setDisable(!isHumanTurn || isEvE);
     }
 }

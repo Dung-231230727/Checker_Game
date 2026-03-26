@@ -15,7 +15,7 @@ import java.net.URL;
 public class MainMenuController {
     private AIConfig ai1Config = new AIConfig(AIConfig.Mode.BALANCED, 5);
     private AIConfig ai2Config = new AIConfig(AIConfig.Mode.BALANCED, 5);
-    private AIConfig hintConfig = new AIConfig(AIConfig.Mode.BALANCED, 6);
+    private AIConfig hintConfig = new AIConfig(AIConfig.Mode.BALANCED, 5);
     
     @FXML
     private void handlePvP(ActionEvent event) throws IOException {
@@ -32,26 +32,33 @@ public class MainMenuController {
         loadGameMode(event, 2); // 2 là chế độ máy đánh với máy
     }
 
-   // Trong MainMenuController.java sửa lại hàm loadGameMode:
-    private void loadGameMode(ActionEvent event, int mode) throws IOException {
-        // Sử dụng getClass() để lấy resource tương đối hoặc tuyệt đối an toàn hơn
-        URL fxmlUrl = getClass().getResource("/com/checkers/controller/game_window.fxml");
-        
-        if (fxmlUrl == null) {
-            // Log lỗi ra Console để bạn biết chính xác nó đang thiếu ở đâu
-            System.err.println("CRITICAL: Không tìm thấy game_window.fxml tại /com/checkers/controller/");
-            return; 
-        }
+    private void loadGameMode(ActionEvent event, int mode) {
+        try {
+            // Sử dụng getClass() thay vì App.class
+            URL fxmlUrl = getClass().getResource("/com/checkers/controller/game_window.fxml");
+            
+            if (fxmlUrl == null) {
+                System.err.println("LỖI NGHIÊM TRỌNG: Không tìm thấy game_window.fxml");
+                return;
+            }
 
-        FXMLLoader loader = new FXMLLoader(fxmlUrl);
-        Parent root = loader.load();
-        
-        GameController gameCtrl = loader.getController();
-        gameCtrl.setInitialConfigs(this.ai1Config, this.ai2Config, this.hintConfig);
-        gameCtrl.startGame(mode);
-        
-        Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-        stage.getScene().setRoot(root);
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+            
+            GameController gameCtrl = loader.getController();
+            
+            // Truyền cấu hình AI từ Menu sang Game
+            gameCtrl.setInitialConfigs(this.ai1Config, this.ai2Config, this.hintConfig);
+            gameCtrl.startGame(mode);
+            
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            stage.getScene().setRoot(root);
+            
+        } catch (Exception | Error e) {
+            // In ra TẤT CẢ các lỗi để không bao giờ bị "chết ngầm" nữa
+            System.err.println("LỖI KHI NẠP MÀN HÌNH GAME:");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -110,9 +117,9 @@ public class MainMenuController {
             // (Xem mục 2 bên dưới để biết cách lưu trữ các biến này)
             ctrl.init(ai1Config, ai2Config, hintConfig, 2); 
 
-            MessageBox.showCustom("THIẾT LẬP CHIẾN THUẬT AI", root, MessageBox.MessageButtons.OK);
+            MessageBox.showCustom("THIẾT LẬP MÁY", root, MessageBox.MessageButtons.OK);
             
-            // Sau khi đóng dialog, các giá trị trong ai1Config, ai2Config... đã được ctrl.save() cập nhật
+            ctrl.save(ai2Config, ai1Config, hintConfig);
         } catch (IOException e) {
             e.printStackTrace();
         }

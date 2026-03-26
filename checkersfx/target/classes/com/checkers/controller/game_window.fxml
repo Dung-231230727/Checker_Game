@@ -65,6 +65,11 @@
             <Button fx:id="btnStart" styleClass="game-button" text="Bắt đầu" onAction="#handleStartGame"/>
             <Button fx:id="btnExit" styleClass="game-button" text="Hủy bỏ ván chơi" onAction="#handleExitToMenu"/>
             
+            <Button fx:id="btnPause" visible="false" managed="false" styleClass="game-button" text="Tạm dừng" onAction="#handlePause"/>
+            <Button fx:id="btnUndo" visible="false" managed="false" styleClass="game-button" text="Đi lại" onAction="#handleUndoMove"/>
+            <Button fx:id="btnHint" visible="false" managed="false" styleClass="game-button" text="Gợi ý" onAction="#handleShowHint"/>
+            <Button fx:id="btnSurrender" visible="false" managed="false" styleClass="game-button" text="Đầu hàng" onAction="#handleSurrender"/>
+            
             <Region HBox.hgrow="ALWAYS" /> 
         </HBox>
     </bottom>

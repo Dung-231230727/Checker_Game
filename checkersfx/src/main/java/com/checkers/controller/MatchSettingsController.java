@@ -56,11 +56,11 @@ public class MatchSettingsController {
     public void init(AIConfig c1, AIConfig c2, AIConfig hint, int gameMode) {
         // Ẩn/Hiện vùng thiết lập tùy theo chế độ chơi
         // mode 0: P v P (Ẩn cả 2 AI), mode 1: P v E (Ẩn AI 2), mode 2: E v E (Hiện cả 2)
-        sectionAI1.setVisible(gameMode != 0);
-        sectionAI1.setManaged(gameMode != 0);
+        sectionAI1.setVisible(gameMode == 2);
+        sectionAI1.setManaged(gameMode == 2);
         
-        sectionAI2.setVisible(gameMode == 2);
-        sectionAI2.setManaged(gameMode == 2);
+        sectionAI2.setVisible(gameMode != 0);
+        sectionAI2.setManaged(gameMode != 0);
 
         // Gán giá trị AI 1
         cbModeAI1.setValue(c1.getCurrentMode());

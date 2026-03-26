@@ -12,6 +12,7 @@ public class AIController {
     private final GameController gameCtrl;
     private final AlphaBetaPruning ai = new AlphaBetaPruning();
     private boolean isThinking = false;
+    private boolean isHinting = false;
 
     public AIController(GameController gameCtrl) {
         this.gameCtrl = gameCtrl;
@@ -71,7 +72,11 @@ public class AIController {
      * Chức năng gợi ý sử dụng cấu hình riêng cho Hint.
      */
     public void showHint(GameState state) {
-        if (state == null || state.isGameOver() || isThinking) return;
+        if (state == null || state.isGameOver() || isThinking || isHinting) return;
+
+        if (state.getCurrentPlayer().getType() != Types.PlayerType.HUMAN) return;
+
+        isHinting = true;
 
         final Board snapshot = state.getBoard().copy();
         final Types.PlayerColor humanColor = state.getCurrentPlayer().getColor();
@@ -92,6 +97,11 @@ public class AIController {
             if (hint != null) {
                 gameCtrl.updateViewSelection(hint.getStartRow(), hint.getStartCol(), java.util.List.of(hint));
             }
+        });
+
+        hintTask.setOnFailed(e -> {
+            isHinting = false; // Mở khóa nếu bị lỗi
+            hintTask.getException().printStackTrace();
         });
 
         new Thread(hintTask).start();

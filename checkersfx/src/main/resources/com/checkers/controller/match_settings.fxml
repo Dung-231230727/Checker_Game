@@ -63,8 +63,8 @@
             
             <Label text="Độ thông minh:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
             <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <Slider fx:id="sliderDepthHint" max="8" min="1" prefWidth="120" snapToTicks="true" value="6" />
-                <Label fx:id="lblDepthHint" style="-fx-font-weight: bold;" text="6" />
+                <Slider fx:id="sliderDepthHint" majorTickUnit="1" max="8" min="1" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="5" />
+                <Label fx:id="lblDepthHint" style="-fx-font-weight: bold;" text="5" />
             </HBox>
          <columnConstraints>
             <ColumnConstraints />
