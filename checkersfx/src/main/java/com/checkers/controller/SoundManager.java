@@ -6,37 +6,46 @@ import java.util.prefs.Preferences;
 public class SoundManager {
     private static AudioClip moveSound;
     private static AudioClip captureSound;
-    private static Preferences prefs = Preferences.userNodeForPackage(SettingsController.class);
+    
+    // Cầu chì tổng
+    private static boolean isMutedTemporarily = false;
 
-    // Hàm này sẽ tải âm thanh vào bộ nhớ (Gọi 1 lần lúc bật game)
     public static void loadSounds() {
         try {
             moveSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/move1.mp3").toExternalForm());
             captureSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/move.mp3").toExternalForm());
         } catch (Exception e) {
-            System.err.println("Cảnh báo: Không tìm thấy file âm thanh trong assets/sounds/");
+            System.err.println("Cảnh báo: Không tìm thấy file âm thanh.");
         }
     }
 
     public static void playMoveSound() {
-        // Chỉ phát nếu cài đặt Sound đang Bật (true) và file không bị lỗi
-        if (prefs.getBoolean("sound", true) && moveSound != null) {
+        // LUÔN đọc trực tiếp từ Preferences để lấy giá trị mới nhất
+        boolean isEnabled = Preferences.userNodeForPackage(SettingsController.class).getBoolean("sound", true);
+        
+        if (!isMutedTemporarily && isEnabled && moveSound != null) {
+            // Dừng cái cũ trước khi phát cái mới để tránh bị kẹt luồng (lượt sau không kêu)
+            moveSound.stop(); 
             moveSound.play();
         }
     }
 
     public static void playCaptureSound() {
-        if (prefs.getBoolean("sound", true) && captureSound != null) {
+        boolean isEnabled = Preferences.userNodeForPackage(SettingsController.class).getBoolean("sound", true);
+        
+        if (!isMutedTemporarily && isEnabled && captureSound != null) {
+            captureSound.stop();
             captureSound.play();
         }
     }
 
     public static void stopAllSounds() {
-        if (moveSound != null && moveSound.isPlaying()) {
-            moveSound.stop();
-        }
-        if (captureSound != null && captureSound.isPlaying()) {
-            captureSound.stop();
-        }
+        isMutedTemporarily = true; 
+        if (moveSound != null) moveSound.stop();
+        if (captureSound != null) captureSound.stop();
+    }
+
+    public static void forceUnmute() {
+        isMutedTemporarily = false;
     }
 }

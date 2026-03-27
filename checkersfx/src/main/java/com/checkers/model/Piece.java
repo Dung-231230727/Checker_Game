@@ -18,4 +18,6 @@ public class Piece {
         p.isKing = this.isKing;
         return p;
     }
+
+    public void setKing(boolean king) { this.isKing = king; }
 }

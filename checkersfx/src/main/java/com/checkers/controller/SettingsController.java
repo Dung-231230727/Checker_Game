@@ -6,7 +6,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
 import javafx.util.Duration;
+
+import java.io.IOException;
 import java.util.prefs.Preferences; // Import thư viện lưu trữ
 
 public class SettingsController {
@@ -101,6 +104,25 @@ public class SettingsController {
     private void onClose() {
         if (rootBox.getScene() != null) {
             ((Stage) rootBox.getScene().getWindow()).close();
+        }
+    }
+
+    @FXML
+    private void handleExitToMenu(ActionEvent event) {
+        // 1. Đóng cửa sổ Setting (Stage) ngay lập tức
+        if (rootBox != null && rootBox.getScene() != null) {
+            javafx.stage.Stage stage = (javafx.stage.Stage) rootBox.getScene().getWindow();
+            stage.close();
+        }
+
+        // 2. Dừng âm thanh (để chắc chắn không bị lọt tiếng)
+        SoundManager.stopAllSounds();
+
+        // 3. Chuyển Root về Menu chính
+        try {
+            com.checkers.App.setRoot("controller/main_menu");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

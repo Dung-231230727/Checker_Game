@@ -180,10 +180,11 @@ public class BoardController {
     }
 
     private void handleSquareClick(int row, int col) {
-        if (gameCtrl == null || !gameCtrl.isGameStarted()) return;
-
+        if (gameCtrl == null || gameCtrl.getCurrentPhase() != GameController.GamePhase.HUMAN_TURN) {
+                    return;
+                }
         GameState state = gameCtrl.getGameState();
-        if (state.isGameOver() || state.getCurrentPlayer().getType() == Types.PlayerType.AI) return;
+        if (state.isGameOver()) return;
 
         // --- CHẶN KHI ĐANG NHẢY LIÊN HOÀN ---
         if (forcedRow != -1 && forcedCol != -1) {
