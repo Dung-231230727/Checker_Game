@@ -42,12 +42,12 @@ public class GameController {
     private AIController aiController;
     private Timeline gameLoop;
     private Pane animationOverlay; 
-    private Label pauseLabel; 
     private TranslateTransition currentTransition;
 
     @FXML private Circle player1ColorCircle, player2ColorCircle;
     @FXML private Label player1NameLabel, player2NameLabel;
     @FXML private Label player1TimerLabel, player2TimerLabel, totalTimerLabel;
+    @FXML private Label pauseLabel;
 
     @FXML private VBox controlsP1, controlsP2;
     @FXML private HBox mainHBox;
@@ -163,16 +163,9 @@ public class GameController {
     }
 
     private void togglePauseOverlay(boolean show) {
-        if (show) {
-            if (pauseLabel == null) {
-                pauseLabel = new Label("GAME PAUSED");
-                pauseLabel.setStyle("-fx-font-size: 45px; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 40px; -fx-background-radius: 20px; -fx-border-color: white; -fx-border-width: 2px; -fx-border-radius: 20px;");
-                pauseLabel.setAlignment(Pos.CENTER);
-                StackPane.setAlignment(pauseLabel, Pos.CENTER);
-            }
-            if (!centerContainer.getChildren().contains(pauseLabel)) centerContainer.getChildren().add(pauseLabel);
-        } else {
-            if (pauseLabel != null) centerContainer.getChildren().remove(pauseLabel);
+        if (pauseLabel != null) {
+            pauseLabel.setVisible(show);
+            pauseLabel.setManaged(show);
         }
     }
 

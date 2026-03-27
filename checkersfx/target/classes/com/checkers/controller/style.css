@@ -292,3 +292,15 @@
     -fx-border-color: #cccccc;
     -fx-border-radius: 5;
 }
+
+.pause-overlay {
+    -fx-font-size: 45px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(0, 0, 0, 0.7); /* Nền đen mờ */
+    -fx-padding: 40px;
+    -fx-background-radius: 20px;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+    -fx-border-radius: 20px;
+}
