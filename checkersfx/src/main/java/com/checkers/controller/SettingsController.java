@@ -1,6 +1,7 @@
 package com.checkers.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -14,6 +15,7 @@ import java.util.prefs.Preferences; // Import thư viện lưu trữ
 
 public class SettingsController {
     @FXML private StackPane toggleSound, toggleMusic, toggleVibration;
+    @FXML private Slider sliderSound, sliderMusic;
     @FXML private Circle dotSound, dotMusic, dotVibration;
     @FXML private VBox rootBox;
     @FXML private javafx.scene.layout.VBox exitSection;
@@ -35,6 +37,22 @@ public class SettingsController {
         updateToggleUI(isSoundOn, toggleSound, dotSound);
         updateToggleUI(isMusicOn, toggleMusic, dotMusic);
         updateToggleUI(isVibrationOn, toggleVibration, dotVibration);
+
+        // 2.5 Khởi tạo Slider và lắng nghe sự kiện
+        if (sliderSound != null) {
+            sliderSound.setValue(prefs.getDouble("soundVolume", 1.0));
+            sliderSound.valueProperty().addListener((obs, oldVal, newVal) -> {
+                prefs.putDouble("soundVolume", newVal.doubleValue());
+                SoundManager.updateVolumes();
+            });
+        }
+        if (sliderMusic != null) {
+            sliderMusic.setValue(prefs.getDouble("musicVolume", 1.0));
+            sliderMusic.valueProperty().addListener((obs, oldVal, newVal) -> {
+                prefs.putDouble("musicVolume", newVal.doubleValue());
+                SoundManager.updateVolumes();
+            });
+        }
 
         // 3. Logic kéo thả cửa sổ
         rootBox.setOnMousePressed(event -> {
@@ -79,6 +97,7 @@ public class SettingsController {
         isMusicOn = !isMusicOn;
         animateToggle(isMusicOn, toggleMusic, dotMusic);
         prefs.putBoolean("music", isMusicOn);
+        SoundManager.updateMusicStatus();
     }
 
     @FXML
@@ -94,6 +113,8 @@ public class SettingsController {
         prefs.putBoolean("sound", isSoundOn);
         prefs.putBoolean("music", isMusicOn);
         prefs.putBoolean("vibration", isVibrationOn);
+        
+        SoundManager.updateMusicStatus();
         
         System.out.println("Đã lưu cài đặt!");
         onClose(); // Lưu xong thì tự động đóng hộp thoại

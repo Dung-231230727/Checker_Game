@@ -15,21 +15,27 @@
     </padding>
 
     <VBox spacing="15.0">
-        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-            <Label text="Âm thanh" styleClass="settings-label"/>
-            <Region HBox.hgrow="ALWAYS" />
-            <StackPane fx:id="toggleSound" onMouseClicked="#handleToggleSound" styleClass="toggle-track">
-                <Circle fx:id="dotSound" radius="10" styleClass="toggle-dot" translateX="-12"/>
-            </StackPane>
-        </HBox>
+        <VBox spacing="5.0">
+            <HBox alignment="CENTER_LEFT" styleClass="settings-row">
+                <Label text="Âm thanh (SFX)" styleClass="settings-label"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <StackPane fx:id="toggleSound" onMouseClicked="#handleToggleSound" styleClass="toggle-track">
+                    <Circle fx:id="dotSound" radius="10" styleClass="toggle-dot" translateX="-12"/>
+                </StackPane>
+            </HBox>
+            <Slider fx:id="sliderSound" min="0.0" max="1.0" value="1.0" blockIncrement="0.1" />
+        </VBox>
 
-        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-            <Label text="Nhạc nền" styleClass="settings-label"/>
-            <Region HBox.hgrow="ALWAYS" />
-            <StackPane fx:id="toggleMusic" onMouseClicked="#handleToggleMusic" styleClass="toggle-track">
-                <Circle fx:id="dotMusic" radius="10" styleClass="toggle-dot" translateX="-12"/>
-            </StackPane>
-        </HBox>
+        <VBox spacing="5.0">
+            <HBox alignment="CENTER_LEFT" styleClass="settings-row">
+                <Label text="Nhạc nền" styleClass="settings-label"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <StackPane fx:id="toggleMusic" onMouseClicked="#handleToggleMusic" styleClass="toggle-track">
+                    <Circle fx:id="dotMusic" radius="10" styleClass="toggle-dot" translateX="-12"/>
+                </StackPane>
+            </HBox>
+            <Slider fx:id="sliderMusic" min="0.0" max="1.0" value="1.0" blockIncrement="0.1" />
+        </VBox>
 
         <HBox alignment="CENTER_LEFT" styleClass="settings-row">
             <Label text="Rung" styleClass="settings-label"/>

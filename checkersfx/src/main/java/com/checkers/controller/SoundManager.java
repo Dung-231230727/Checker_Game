@@ -1,21 +1,70 @@
 package com.checkers.controller;
 
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import java.util.prefs.Preferences;
 
 public class SoundManager {
     private static AudioClip moveSound;
     private static AudioClip captureSound;
+    private static MediaPlayer bgmPlayer; // Sử dụng MediaPlayer để chỉnh được âm lượng realtime
     
     // Cầu chì tổng
     private static boolean isMutedTemporarily = false;
+    private static boolean isBgmPlayingState = false;
+    private static boolean isLoaded = false;
 
     public static void loadSounds() {
+        if (isLoaded) return;
+        isLoaded = true;
+        
         try {
             moveSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/move1.mp3").toExternalForm());
             captureSound = new AudioClip(SoundManager.class.getResource("/com/checkers/assets/sounds/move.mp3").toExternalForm());
+            
+            // Tải nhạc nền
+            String musicPath = SoundManager.class.getResource("/com/checkers/assets/music/Người Im Lặng Gặp Người Hay Nói.mp3").toExternalForm();
+            Media media = new Media(musicPath);
+            bgmPlayer = new MediaPlayer(media);
+            bgmPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Lặp vô hạn
+
+            bgmPlayer.setOnReady(() -> {
+                updateVolumes();
+                updateMusicStatus();
+            });
+            
         } catch (Exception e) {
-            System.err.println("Cảnh báo: Không tìm thấy file âm thanh.");
+            System.err.println("Cảnh báo: Không tìm thấy file âm thanh hoặc nhạc nền.");
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateVolumes() {
+        Preferences prefs = Preferences.userNodeForPackage(SettingsController.class);
+        double soundVol = prefs.getDouble("soundVolume", 1.0);
+        double musicVol = prefs.getDouble("musicVolume", 1.0);
+        
+        if (moveSound != null) moveSound.setVolume(soundVol);
+        if (captureSound != null) captureSound.setVolume(soundVol);
+        if (bgmPlayer != null) bgmPlayer.setVolume(musicVol);
+    }
+
+    public static void updateMusicStatus() {
+        if (bgmPlayer == null) return;
+        
+        boolean isEnabled = Preferences.userNodeForPackage(SettingsController.class).getBoolean("music", true);
+        if (isEnabled && !isMutedTemporarily) {
+            if (!isBgmPlayingState) {
+                // Kiểm soát luồng ngặt nghèo để tránh gọi play() nhiều lần gây crash MediaPlayer
+                bgmPlayer.play();
+                isBgmPlayingState = true;
+            }
+        } else {
+            if (isBgmPlayingState) {
+                bgmPlayer.pause();
+                isBgmPlayingState = false;
+            }
         }
     }
 
@@ -40,12 +89,21 @@ public class SoundManager {
     }
 
     public static void stopAllSounds() {
-        isMutedTemporarily = true; 
+        // Chỉ dừng các hiệu ứng âm thanh ngắn, không dừng nhạc nền trừ khi muốn tắt hẳn
         if (moveSound != null) moveSound.stop();
         if (captureSound != null) captureSound.stop();
     }
 
+    public static void pauseMusic() {
+        if (bgmPlayer != null) bgmPlayer.pause();
+    }
+
+    public static void resumeMusic() {
+        updateMusicStatus();
+    }
+
     public static void forceUnmute() {
         isMutedTemporarily = false;
+        updateMusicStatus();
     }
 }

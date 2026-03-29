@@ -18,6 +18,7 @@ com\checkers\controller\MatchSettingsController.class
 com\checkers\controller\MessageBoxController.class
 com\checkers\model\Types.class
 com\checkers\controller\MoveController.class
+com\checkers\ai\TTEntry.class
 com\checkers\utils\MessageBox$MessageButtons.class
 com\checkers\controller\AIController$1.class
 com\checkers\App.class

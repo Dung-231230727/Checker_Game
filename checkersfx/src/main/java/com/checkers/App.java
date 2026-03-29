@@ -1,5 +1,6 @@
 package com.checkers;
 
+import com.checkers.controller.SoundManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +14,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        SoundManager.loadSounds(); // Khởi tạo âm thanh và nhạc nền
         window = stage;
         window.setTitle("Checker Game"); 
         
