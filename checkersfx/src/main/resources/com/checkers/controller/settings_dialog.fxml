@@ -4,35 +4,45 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.Circle?>
 
-<VBox fx:id="rootBox" spacing="20.0" xmlns="http://javafx.com/javafx/21" 
+<VBox fx:id="rootBox" spacing="24.0" xmlns="http://javafx.com/javafx/21" 
       xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.checkers.controller.SettingsController"
       stylesheets="@style.css"
       alignment="CENTER">
     
     <padding>
-        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+        <Insets top="28.0" right="32.0" bottom="28.0" left="32.0"/>
     </padding>
 
-    <VBox spacing="15.0">
-        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-            <Label text="Âm thanh" styleClass="settings-label"/>
+    <Label text="Settings" style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #0f172a;">
+        <VBox.margin>
+            <Insets bottom="8" />
+        </VBox.margin>
+    </Label>
+
+    <VBox spacing="4.0" styleClass="ai-config-section">
+        <HBox alignment="CENTER_LEFT" styleClass="settings-row" style="-fx-padding: 12 0 12 0;">
+            <Label text="Sound Effects" styleClass="settings-label"/>
             <Region HBox.hgrow="ALWAYS" />
             <StackPane fx:id="toggleSound" onMouseClicked="#handleToggleSound" styleClass="toggle-track">
                 <Circle fx:id="dotSound" radius="10" styleClass="toggle-dot" translateX="-12"/>
             </StackPane>
         </HBox>
 
-        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-            <Label text="Nhạc nền" styleClass="settings-label"/>
+        <Separator style="-fx-padding: 0;" />
+
+        <HBox alignment="CENTER_LEFT" styleClass="settings-row" style="-fx-padding: 12 0 12 0;">
+            <Label text="Background Music" styleClass="settings-label"/>
             <Region HBox.hgrow="ALWAYS" />
             <StackPane fx:id="toggleMusic" onMouseClicked="#handleToggleMusic" styleClass="toggle-track">
                 <Circle fx:id="dotMusic" radius="10" styleClass="toggle-dot" translateX="-12"/>
             </StackPane>
         </HBox>
 
-        <HBox alignment="CENTER_LEFT" styleClass="settings-row">
-            <Label text="Rung" styleClass="settings-label"/>
+        <Separator style="-fx-padding: 0;" />
+
+        <HBox alignment="CENTER_LEFT" styleClass="settings-row" style="-fx-padding: 12 0 12 0;">
+            <Label text="Vibration" styleClass="settings-label"/>
             <Region HBox.hgrow="ALWAYS" />
             <StackPane fx:id="toggleVibration" onMouseClicked="#handleToggleVibration" styleClass="toggle-track">
                 <Circle fx:id="dotVibration" radius="10" styleClass="toggle-dot" translateX="-12"/>
@@ -40,16 +50,15 @@
         </HBox>
     </VBox>
 
-    <Separator style="-fx-padding: 10 0 10 0;" />
+    <Region prefHeight="8" />
 
-    <VBox alignment="CENTER" spacing="10.0">
+    <VBox alignment="CENTER" spacing="12.0">
         <Button fx:id="btnExitToMenu" 
-                text="Thoát về Menu chính" 
+                text="Exit to Main Menu" 
                 onAction="#handleExitToMenu" 
                 styleClass="game-button-red" 
-                prefWidth="220.0"
-                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"/>
-        <Label text="(Ván đấu hiện tại sẽ bị hủy)" style="-fx-text-fill: #95a5a6; -fx-font-size: 11px;"/>
+                prefWidth="200.0"/>
+        <Label text="Current game will be cancelled" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px;"/>
     </VBox>
 
 </VBox>

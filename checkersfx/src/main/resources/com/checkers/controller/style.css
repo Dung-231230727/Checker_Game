@@ -1,306 +1,444 @@
-/* Cài đặt chung cho toàn ứng dụng */
+/* ============================================
+   MODERN CHECKERS GAME THEME
+   Clean, Contemporary Design System
+   ============================================ */
+
+/* CSS Variables for consistent theming */
 .root {
-    -fx-background-color: white; /* Nền trắng */
-    -fx-font-family: "Arial", sans-serif;
+    -fx-primary: #6366f1;           /* Indigo - main brand color */
+    -fx-primary-dark: #4f46e5;      /* Darker indigo for hover */
+    -fx-primary-light: #a5b4fc;     /* Light indigo for accents */
+    -fx-secondary: #0ea5e9;         /* Sky blue - secondary actions */
+    -fx-surface: #ffffff;           /* White surface */
+    -fx-surface-dim: #f8fafc;       /* Subtle gray background */
+    -fx-surface-elevated: #ffffff;  /* Elevated cards */
+    -fx-border: #e2e8f0;            /* Soft gray border */
+    -fx-border-dark: #cbd5e1;       /* Darker border */
+    -fx-text-primary: #0f172a;      /* Near black text */
+    -fx-text-secondary: #64748b;    /* Muted text */
+    -fx-text-muted: #94a3b8;        /* Very muted text */
+    -fx-success: #22c55e;           /* Green for success states */
+    -fx-danger: #ef4444;            /* Red for danger */
+    -fx-warning: #f59e0b;           /* Amber for warnings */
+    
+    -fx-background-color: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+    -fx-font-family: "Segoe UI", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ====== KIỂU DÁNG CHO MENU (TRANG 1) ====== */
+/* ====== MAIN MENU (PAGE 1) ====== */
 .menu-button {
-    -fx-background-color: white;
-    -fx-text-fill: #8E1451; /* Màu tím đỏ giống PDF */
-    -fx-border-color: #8E1451; /* Viền cùng màu chữ */
-    -fx-border-width: 1px;
-    -fx-border-radius: 15px; /* Bo góc viền */
-    -fx-background-radius: 15px; /* Bo góc nền */
-    -fx-font-size: 22px; /* Chữ khá to */
-    -fx-font-style: italic; /* Chữ in nghiêng */
-    /* -fx-padding: 10 10 10 10; */
-    -fx-cursor: hand; /* Đổi chuột thành hình bàn tay */
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #6366f1;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-font-style: normal;
+    -fx-padding: 14 32 14 32;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 8, 0, 0, 2);
 }
 
-/* Hiệu ứng khi lướt chuột qua nút */
 .menu-button:hover {
-    -fx-background-color: #F8E8F0; /* Hiện nền phớt hồng nhẹ */
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #6366f1;
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.15), 12, 0, 0, 4);
 }
 
-/* Hiệu ứng khi bấm nút */
 .menu-button:pressed {
-    -fx-background-color: #8E1451;
-    -fx-text-fill: white;
+    -fx-background-color: #6366f1;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #6366f1;
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.3), 4, 0, 0, 1);
 }
 
 .title-label {
-    -fx-font-size: 120px;      /* Chữ to hẳn lên */
-    -fx-font-weight: bold;    /* Chữ đậm */
-    -fx-text-fill: #8E1451;   /* Màu tím đỏ đặc trưng */
-    -fx-margin-bottom: 40px;  /* Tạo khoảng cách với các nút bên dưới */
-    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif; 
-    -fx-font-style: italic; /* Chữ in nghiêng */
+    -fx-font-size: 72px;
+    -fx-font-weight: 700;
+    -fx-text-fill: transparent;
+    -fx-background-color: linear-gradient(to right, #6366f1, #8b5cf6);
+    -fx-background-clip: text;
+    -fx-font-family: "Segoe UI", "SF Pro Display", -apple-system, sans-serif;
+    -fx-font-style: normal;
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.2), 15, 0, 0, 4);
 }
 
-/* ====== KIỂU DÁNG CHO TRANG 2 (GAME BOARD) ====== */
+/* ====== GAME BOARD (PAGE 2) ====== */
 
-/* Thanh trên và dưới */
+/* Top and Bottom Bars */
 .bar-background {
-    -fx-background-color: #F4F4F4; /* Màu xám nhạt như PDF */
-    -fx-padding: 10 20 10 20;
-    -fx-border-color: #DDDDDD;
-    -fx-border-width: 1 0 1 0; /* Chỉ có viền trên và dưới */
+    -fx-background-color: #ffffff;
+    -fx-padding: 16 24 16 24;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 4, 0, 0, 2);
 }
 
-/* Chữ trong thanh thông tin */
+/* Player info text */
 .player-text {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #0f172a;
 }
+
 .time-text {
-    -fx-font-size: 14px;
-    -fx-text-fill: #555555;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #64748b;
 }
+
 .vs-text {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #94a3b8;
 }
 
-/* 4 Nút điều khiển bên dưới */
+/* Side panels */
+.side-panel {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 24 16 24 16;
+}
+
+/* Game control buttons */
 .game-button {
-    -fx-background-color: white;
-    -fx-border-color: #AAAAAA;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-    -fx-padding: 8 20 8 20;
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 20 10 20;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 4, 0, 0, 1);
 }
+
 .game-button:hover {
-    -fx-background-color: #E8E8E8;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #6366f1;
+    -fx-text-fill: #6366f1;
 }
 
-/* CSS cho ô cờ (Sẽ dùng trong file Java) */
-.light-square { -fx-background-color: #FFA6C9; } /* Hồng nhạt */
-.dark-square { -fx-background-color: #9A0079; }  /* Tím đậm */
+.game-button:pressed {
+    -fx-background-color: #6366f1;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #6366f1;
+}
 
-/* Kiểu dáng cho khung bao quanh bàn cờ */
+/* Side panel buttons */
+.side-button {
+    -fx-background-color: #f8fafc;
+    -fx-text-fill: #475569;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 24 10 24;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+    -fx-pref-width: 140;
+}
+
+.side-button:hover {
+    -fx-background-color: #6366f1;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #6366f1;
+}
+
+/* Board squares - modern gradient approach */
+.light-square { 
+    -fx-background-color: #fef3f2;  /* Soft rose tint */
+}
+
+.dark-square { 
+    -fx-background-color: linear-gradient(to bottom right, #7c3aed, #6366f1);
+}
+
+/* Board container with refined shadow */
 .board-grid {
-    /* Đổi màu viền đậm hơn (màu tím đỏ đậm hoặc đen nâu) */
-    -fx-border-color: #5D0E35; 
-    
-    /* Độ dày viền: tăng lên 5px hoặc 8px tùy sở thích của bạn */
-    -fx-border-width: 8px; 
-    
-    /* Bo góc nhẹ cho viền ngoài nếu muốn (tùy chọn) */
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    
-    /* Tạo hiệu ứng bóng đổ để bàn cờ trông "đằm" và nổi khối hơn */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 15, 0, 0, 0);
-    
-    /* Đảm bảo không có khoảng cách giữa viền và các ô cờ bên trong */
+    -fx-border-color: #1e1b4b;
+    -fx-border-width: 6px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(30, 27, 75, 0.25), 24, 0, 0, 8);
     -fx-padding: 0;
 }
 
-/* Quân cờ chung */
+/* ====== GAME PIECES ====== */
+
 .piece {
-    /* Đổi màu viền đậm hơn */
-    -fx-stroke: #5D0E35; 
-    
-    /* Độ dày viền: tăng lên 2.5px hoặc 3px tùy sở thích của bạn */
-    -fx-stroke-width: 2.5px; 
-    
-    /* Tạo hiệu ứng bóng đổ mờ nhẹ để quân cờ trông "đằm" và nổi khối hơn */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 8, 0, 0, 2);
-    
-    /* Đảm bảo quân cờ sắc nét không bị nhòe */
-    -fx-stroke-type: outside; 
-    -fx-cursor: hand; 
+    -fx-stroke: #1e1b4b;
+    -fx-stroke-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 6, 0, 0, 3);
+    -fx-stroke-type: outside;
+    -fx-cursor: hand;
 }
 
-/* 1. Quân Trắng */
+/* White pieces - clean gradient */
 .white-piece {
-    -fx-fill: linear-gradient(to bottom right, #ffffff, #e0e0e0);
+    -fx-fill: linear-gradient(to bottom right, #ffffff, #f1f5f9);
 }
 
-/* 2. Quân Xanh */
+/* Blue pieces - modern gradient */
 .blue-piece {
-    -fx-fill: linear-gradient(to bottom right, #3498db, #2c3e50);
+    -fx-fill: linear-gradient(to bottom right, #38bdf8, #0284c7);
 }
 
-/* 3. Quân Vua (có thể áp dụng cho cả trắng và xanh khi lên vua) */
-/* Kiểu dáng cho biểu tượng vương miện */
+/* Crown for kings */
 .crown-label {
-    -fx-font-size: 32px; /* Chỉnh kích thước to/nhỏ tùy ý */
-    -fx-text-fill: #FFD700; /* Màu vàng Gold rực rỡ */
+    -fx-font-size: 28px;
+    -fx-text-fill: #fbbf24;
     -fx-font-weight: bold;
-    -fx-font-family: "Segoe UI Symbol"; 
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 5, 0, 0, 1);
+    -fx-font-family: "Segoe UI Symbol", "Apple Color Emoji", sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 4, 0, 0, 1);
     -fx-alignment: center;
 }
 
-/* Các lớp Highlight giữ nguyên */
+/* Piece selection states */
 .piece-selected {
-    -fx-stroke: #00ff00;
-    -fx-stroke-width: 4px;
+    -fx-stroke: #22c55e;
+    -fx-stroke-width: 3.5px;
+    -fx-effect: dropshadow(gaussian, rgba(34, 197, 94, 0.5), 12, 0, 0, 0);
 }
 
 .piece-hinted {
-    -fx-stroke: #FFD700; 
-    -fx-stroke-width: 4px;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.8), 15, 0, 0, 0); 
+    -fx-stroke: #f59e0b;
+    -fx-stroke-width: 3.5px;
+    -fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.5), 12, 0, 0, 0);
 }
 
-/* Hiệu ứng khi quân cờ được chọn */
-.piece-selected {
-    -fx-stroke: #00ff00;
-    -fx-stroke-width: 4px;
-}
-
-/* THÊM MỚI: Hiệu ứng khi quân cờ được AI gợi ý */
-.piece-hinted {
-    -fx-stroke: #FFD700; /* Viền màu Vàng Gold */
-    -fx-stroke-width: 4px;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.8), 15, 0, 0, 0); /* Bóng đổ vàng rực */
-}
-
-/* Chấm tròn nhỏ gợi ý nước đi */
-.suggest-dot {
-    -fx-fill: rgba(255, 255, 255, 0.4); /* Trắng mờ */
-    -fx-stroke: rgba(0, 0, 0, 0.1);
-    -fx-stroke-width: 1;
-}
-
-/* Hiệu ứng khi di chuột vào ô có chấm tròn */
-.dark-square:hover .suggest-dot {
-    -fx-fill: rgba(255, 255, 255, 0.7);
-}
-
-/* Thêm hiệu ứng bóng đổ đậm hơn khi quân cờ đang trượt */
 .piece-moving {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 16, 0, 0, 8);
 }
 
-/* Đảm bảo StackPane chứa ô cờ không chặn hiệu ứng nổi của quân cờ */
+/* Move suggestion dot */
+.suggest-dot {
+    -fx-fill: rgba(255, 255, 255, 0.5);
+    -fx-stroke: rgba(255, 255, 255, 0.7);
+    -fx-stroke-width: 2;
+}
+
+.dark-square:hover .suggest-dot {
+    -fx-fill: rgba(255, 255, 255, 0.8);
+}
+
+/* Ensure squares don't interfere with piece effects */
 .dark-square, .light-square {
     -fx-background-insets: 0;
 }
 
-/* ====== GIAO DIỆN CÀI ĐẶT (SETTINGS DIALOG) ====== */
+/* ====== SETTINGS DIALOG ====== */
+
 .settings-dialog {
-    -fx-background-color: white;
-    -fx-border-color: #8E1451; /* Viền tím đỏ đồng bộ Menu */
-    -fx-border-width: 3px;
-    -fx-border-radius: 15px;
-    -fx-background-radius: 15px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 20, 0, 0, 5); /* Bóng đổ nổi bật */
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 24, 0, 0, 8);
 }
 
 .settings-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #8E1451;
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
 }
 
-/* Nút X đóng dialog */
+/* Close button */
 .close-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #8E1451;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
     -fx-cursor: hand;
-    -fx-padding: 5 10 5 10;
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 8px;
 }
 
 .close-button:hover {
-    -fx-background-color: #F8E8F0;
-    -fx-background-radius: 50%;
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #ef4444;
 }
 
-/* Custom CheckBox */
-.settings-checkbox {
-    -fx-font-size: 18px;
-    -fx-text-fill: #333333;
-    -fx-cursor: hand;
-}
-
-/* Dòng chứa cài đặt */
+/* Settings rows */
 .settings-row {
-    -fx-padding: 5 0 5 0;
+    -fx-padding: 8 0 8 0;
 }
 
 .settings-label {
-    -fx-font-size: 18px;
-    -fx-text-fill: #333333;
+    -fx-font-size: 15px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #374151;
 }
 
-/* Thanh trượt (Track) */
+/* Modern toggle switch track */
 .toggle-track {
-    -fx-min-width: 50px;
+    -fx-min-width: 48px;
     -fx-min-height: 26px;
-    -fx-max-width: 50px;
-    -fx-background-radius: 15px;
-    -fx-background-color: #DDDDDD; /* Màu xám khi tắt */
+    -fx-max-width: 48px;
+    -fx-background-radius: 13px;
+    -fx-background-color: #e2e8f0;
     -fx-cursor: hand;
 }
 
-/* Chấm tròn (Dot) */
-.toggle-dot {
-    -fx-fill: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 1);
-}
-
-/* Khi nút gạt ở trạng thái Bật */
 .toggle-track-on {
-    -fx-background-color: #8E1451; /* Màu tím đỏ đặc trưng */
+    -fx-background-color: #6366f1;
 }
 
-/* Nút Áp dụng trong Cài đặt */
+/* Toggle switch dot */
+.toggle-dot {
+    -fx-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+}
+
+/* Apply/Confirm button */
 .apply-button {
-    -fx-background-color: #8E1451;
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 8 20 8 20;
-    -fx-background-radius: 10px;
+    -fx-background-color: #6366f1;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 24 10 24;
+    -fx-background-radius: 8px;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.3), 8, 0, 0, 2);
 }
 
 .apply-button:hover {
-    -fx-background-color: #5D0E35; /* Đậm hơn khi lướt chuột */
+    -fx-background-color: #4f46e5;
 }
 
-/* Khối bao quanh mỗi khu vực AI */
+.apply-button:pressed {
+    -fx-background-color: #4338ca;
+}
+
+/* AI configuration sections */
 .ai-config-section {
-    -fx-background-color: #f9f9f9;
-    -fx-padding: 15;
-    -fx-border-color: #dddddd;
+    -fx-background-color: #f8fafc;
+    -fx-padding: 20;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 1;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
 }
 
-/* Tùy chỉnh Slider để trông hiện đại hơn */
+/* Modern slider styling */
 .slider .track {
-    -fx-background-color: #ddd;
+    -fx-background-color: #e2e8f0;
     -fx-pref-height: 6;
+    -fx-background-radius: 3;
 }
+
 .slider .thumb {
-    -fx-background-color: #8E1451;
+    -fx-background-color: #6366f1;
+    -fx-background-radius: 50%;
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.4), 4, 0, 0, 1);
 }
 
-/* ComboBox trong phần cài đặt */
+/* ComboBox styling */
 .combo-box {
-    -fx-background-color: white;
-    -fx-border-color: #cccccc;
-    -fx-border-radius: 5;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 4 8 4 8;
 }
 
+.combo-box:hover {
+    -fx-border-color: #6366f1;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #374151;
+    -fx-font-size: 13px;
+}
+
+/* Pause overlay - modern glass effect */
 .pause-overlay {
-    -fx-font-size: 45px;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-background-color: rgba(0, 0, 0, 0.7); /* Nền đen mờ */
-    -fx-padding: 40px;
-    -fx-background-radius: 20px;
-    -fx-border-color: white;
-    -fx-border-width: 2px;
-    -fx-border-radius: 20px;
+    -fx-font-size: 36px;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 700;
+    -fx-background-color: rgba(15, 23, 42, 0.85);
+    -fx-padding: 48px 64px;
+    -fx-background-radius: 16px;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 24, 0, 0, 8);
+}
+
+/* Danger/Red button variant */
+.game-button-red {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #dc2626;
+    -fx-border-color: #fecaca;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 20 10 20;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.game-button-red:hover {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #dc2626;
+}
+
+/* Checkbox styling */
+.settings-checkbox {
+    -fx-font-size: 15px;
+    -fx-text-fill: #374151;
+    -fx-cursor: hand;
+}
+
+.settings-checkbox .box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.settings-checkbox:selected .box {
+    -fx-background-color: #6366f1;
+    -fx-border-color: #6366f1;
+}
+
+/* Separator styling */
+.separator {
+    -fx-background-color: #e2e8f0;
+}
+
+.separator .line {
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Scrollbar modern styling */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94a3b8;
+}
+
+.scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
 }

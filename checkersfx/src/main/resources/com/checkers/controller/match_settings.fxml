@@ -11,69 +11,75 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20" styleClass="settings-dialog" stylesheets="@style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.controller.MatchSettingsController">
+<VBox alignment="CENTER" spacing="24" styleClass="settings-dialog" stylesheets="@style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.checkers.controller.MatchSettingsController">
     
     <padding>
-        <Insets bottom="20" left="30" right="30" top="20" />
+        <Insets bottom="28" left="36" right="36" top="28" />
     </padding>
 
-    <HBox alignment="CENTER" spacing="30">
-        <VBox fx:id="sectionAI1" prefWidth="250" spacing="15" styleClass="ai-config-section">
-            <Label style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="MÁY TRẮNG (AI 1)" />
+    <Label text="Match Settings" style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #0f172a;">
+        <VBox.margin>
+            <Insets bottom="8" />
+        </VBox.margin>
+    </Label>
+
+    <HBox alignment="CENTER" spacing="24">
+        <VBox fx:id="sectionAI1" prefWidth="280" spacing="16" styleClass="ai-config-section">
+            <Label style="-fx-font-weight: 700; -fx-font-size: 15px; -fx-text-fill: #475569;" text="WHITE AI (Player 1)" />
             
-            <VBox spacing="5">
-                <Label text="Chế độ đánh:" />
+            <VBox spacing="8">
+                <Label text="Play Mode" style="-fx-font-size: 13px; -fx-text-fill: #64748b;" />
                 <ComboBox fx:id="cbModeAI1" maxWidth="Infinity" />
             </VBox>
 
-            <VBox spacing="5">
-                <HBox spacing="10">
-                    <Label text="Độ sâu tính toán:" />
-                    <Label fx:id="lblDepthAI1" style="-fx-text-fill: #8E1451; -fx-font-weight: bold;" text="5" />
+            <VBox spacing="8">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Search Depth" style="-fx-font-size: 13px; -fx-text-fill: #64748b;" />
+                    <Label fx:id="lblDepthAI1" style="-fx-text-fill: #6366f1; -fx-font-weight: 700; -fx-font-size: 14px;" text="5" />
                 </HBox>
                 <Slider fx:id="sliderDepthAI1" majorTickUnit="1" max="8" min="1" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="5" />
             </VBox>
         </VBox>
 
-        <VBox fx:id="sectionAI2" prefWidth="250" spacing="15" styleClass="ai-config-section">
-            <Label style="-fx-font-weight: bold; -fx-text-fill: #3498db;" text="MÁY XANH (AI 2)" />
+        <VBox fx:id="sectionAI2" prefWidth="280" spacing="16" styleClass="ai-config-section">
+            <Label style="-fx-font-weight: 700; -fx-font-size: 15px; -fx-text-fill: #0ea5e9;" text="BLUE AI (Player 2)" />
             
-            <VBox spacing="5">
-                <Label text="Chế độ đánh:" />
+            <VBox spacing="8">
+                <Label text="Play Mode" style="-fx-font-size: 13px; -fx-text-fill: #64748b;" />
                 <ComboBox fx:id="cbModeAI2" maxWidth="Infinity" />
             </VBox>
 
-            <VBox spacing="5">
-                <HBox spacing="10">
-                    <Label text="Độ sâu tính toán:" />
-                    <Label fx:id="lblDepthAI2" style="-fx-text-fill: #8E1451; -fx-font-weight: bold;" text="5" />
+            <VBox spacing="8">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Search Depth" style="-fx-font-size: 13px; -fx-text-fill: #64748b;" />
+                    <Label fx:id="lblDepthAI2" style="-fx-text-fill: #6366f1; -fx-font-weight: 700; -fx-font-size: 14px;" text="5" />
                 </HBox>
                 <Slider fx:id="sliderDepthAI2" majorTickUnit="1" max="8" min="1" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="5" />
             </VBox>
         </VBox>
     </HBox>
 
-    <Separator />
+    <Separator style="-fx-padding: 8 0 8 0;" />
 
-    <VBox maxWidth="400" spacing="15" styleClass="ai-config-section">
-        <Label style="-fx-font-weight: bold; -fx-text-fill: #27ae60;" text="HỆ THỐNG GỢI Ý" />
-        <GridPane hgap="20" vgap="10">
-            <Label text="Chế độ gợi ý:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <ComboBox fx:id="cbModeHint" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <VBox maxWidth="400" spacing="16" styleClass="ai-config-section">
+        <Label style="-fx-font-weight: 700; -fx-font-size: 15px; -fx-text-fill: #22c55e;" text="HINT SYSTEM" />
+        <GridPane hgap="24" vgap="12">
+            <Label text="Hint Mode" style="-fx-font-size: 13px; -fx-text-fill: #64748b;" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <ComboBox fx:id="cbModeHint" prefWidth="160" GridPane.columnIndex="1" GridPane.rowIndex="0" />
             
-            <Label text="Độ thông minh:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <HBox alignment="CENTER_LEFT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                <Slider fx:id="sliderDepthHint" majorTickUnit="1" max="8" min="1" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="5" />
-                <Label fx:id="lblDepthHint" style="-fx-font-weight: bold;" text="5" />
+            <Label text="Intelligence" style="-fx-font-size: 13px; -fx-text-fill: #64748b;" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <HBox alignment="CENTER_LEFT" spacing="12" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Slider fx:id="sliderDepthHint" majorTickUnit="1" max="8" min="1" minorTickCount="0" showTickMarks="true" snapToTicks="true" value="5" prefWidth="100" />
+                <Label fx:id="lblDepthHint" style="-fx-font-weight: 700; -fx-text-fill: #6366f1; -fx-font-size: 14px;" text="5" />
             </HBox>
-         <columnConstraints>
-            <ColumnConstraints />
-            <ColumnConstraints />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
-         </rowConstraints>
+            <columnConstraints>
+                <ColumnConstraints minWidth="100" />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
         </GridPane>
     </VBox>
 
