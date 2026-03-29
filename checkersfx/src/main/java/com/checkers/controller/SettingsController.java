@@ -16,6 +16,7 @@ public class SettingsController {
     @FXML private StackPane toggleSound, toggleMusic, toggleVibration;
     @FXML private Circle dotSound, dotMusic, dotVibration;
     @FXML private VBox rootBox;
+    @FXML private javafx.scene.layout.VBox exitSection;
 
     private boolean isSoundOn, isMusicOn, isVibrationOn;
     private double xOffset = 0, yOffset = 0;
@@ -47,6 +48,14 @@ public class SettingsController {
         });
     }
 
+    /** Gọi từ MainMenuController để ẩn nút Thoát khỏi game */
+    public void setFromMenu(boolean fromMenu) {
+        if (exitSection != null) {
+            exitSection.setVisible(!fromMenu);
+            exitSection.setManaged(!fromMenu);
+        }
+    }
+
     // Hàm cập nhật UI không dùng hiệu ứng (dùng khi mới mở dialog)
     private void updateToggleUI(boolean isOn, StackPane track, Circle dot) {
         if (isOn) {
@@ -62,18 +71,21 @@ public class SettingsController {
     private void handleToggleSound() {
         isSoundOn = !isSoundOn;
         animateToggle(isSoundOn, toggleSound, dotSound);
+        prefs.putBoolean("sound", isSoundOn);
     }
 
     @FXML
     private void handleToggleMusic() {
         isMusicOn = !isMusicOn;
         animateToggle(isMusicOn, toggleMusic, dotMusic);
+        prefs.putBoolean("music", isMusicOn);
     }
 
     @FXML
     private void handleToggleVibration() {
         isVibrationOn = !isVibrationOn;
         animateToggle(isVibrationOn, toggleVibration, dotVibration);
+        prefs.putBoolean("vibration", isVibrationOn);
     }
 
     @FXML
@@ -118,7 +130,12 @@ public class SettingsController {
         // 2. Dừng âm thanh (để chắc chắn không bị lọt tiếng)
         SoundManager.stopAllSounds();
 
-        // 3. Chuyển Root về Menu chính
+        // 3. Dọn dẹp Tiến trình chơi Game hiện tại (gameLoop, thread AI...)
+        if (GameController.getInstance() != null) {
+            GameController.getInstance().forceEndGame();
+        }
+
+        // 4. Chuyển Root về Menu chính
         try {
             com.checkers.App.setRoot("controller/main_menu");
         } catch (IOException e) {

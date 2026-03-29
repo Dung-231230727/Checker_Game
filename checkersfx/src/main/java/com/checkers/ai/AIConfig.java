@@ -1,7 +1,22 @@
 package com.checkers.ai;
 
 public class AIConfig {
-    public enum Mode { ATTACK, DEFENSE, BALANCED }
+    public enum Mode {
+        ATTACK("Tấn công"), 
+        DEFENSE("Phòng thủ"), 
+        BALANCED("Cân bằng");
+
+        private final String displayName;
+
+        Mode(String displayName) {
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String toString() {
+            return displayName;
+        }
+    }
     
     private Mode currentMode;
     private int searchDepth; 

@@ -12,6 +12,8 @@ import com.checkers.utils.MessageBox;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
+import javafx.application.Platform;
+
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
@@ -30,8 +32,6 @@ import javafx.util.Duration;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 
 public class GameController {
@@ -43,6 +43,18 @@ public class GameController {
     private Timeline gameLoop;
     private Pane animationOverlay; 
     private TranslateTransition currentTransition;
+    private static GameController instance;
+
+    public static GameController getInstance() {
+        return instance;
+    }
+
+    public void forceEndGame() {
+        this.isGameStarted = false;
+        cleanup();
+        setPhase(GamePhase.GAME_OVER);
+    }
+
 
     @FXML private Circle player1ColorCircle, player2ColorCircle;
     @FXML private Label player1NameLabel, player2NameLabel;
@@ -53,7 +65,7 @@ public class GameController {
     @FXML private HBox mainHBox;
     @FXML private Button btnPauseP1, btnUndoP1, btnHintP1, btnSurrenderP1;
     @FXML private Button btnPauseP2, btnUndoP2, btnHintP2, btnSurrenderP2;
-    @FXML private Button btnStart, btnExit, btnMatchSettings, btnPauseSystem;
+    @FXML private Button btnStart, btnExit, btnMatchSettings, btnPauseSystem, btnSettings;
 
     private int turnTimeLimit = 60; 
     private int player1TurnTime, player2TurnTime;
@@ -72,13 +84,34 @@ public class GameController {
     public enum GamePhase { STANDBY, HUMAN_TURN, AI_TURN, ANIMATING, PAUSED, GAME_OVER, ANIMATING_IN_PAUSE }
     private GamePhase currentPhase = GamePhase.STANDBY;
     private GamePhase phaseBeforePause = GamePhase.STANDBY;
+    private boolean showPauseOverlay = false; // chỉ hiện overlay khi nhấn nút Tạm dừng
+    
+    // Limits
+    private int noCaptureOrPromotionCounter = 0;
+    private int hintCooldownP1 = 0;
+    private int hintCooldownP2 = 0;
+    private int p1UndoCount = 3;
+    private int p2UndoCount = 3;
+    private boolean p1HasUndoneThisTurn = false;
+    private boolean p2HasUndoneThisTurn = false;
 
     public GamePhase getCurrentPhase() { return currentPhase; }
     public GameState getGameState() { return gameState; }
     public AIConfig getHintConfig() { return hintConfig; }
     public AIConfig getAi1Config() { return ai1Config; }
     public AIConfig getAi2Config() { return ai2Config; }
-    public void handleGameOver() { if(gameLoop != null) gameLoop.stop(); }
+    
+    public void handleGameOver(String customMessage) { 
+        if(gameLoop != null) gameLoop.stop(); 
+        if (gameState != null && !gameState.isGameOver()) {
+            gameState.setGameOver(true);
+        }
+        setPhase(GamePhase.GAME_OVER);
+        
+        Platform.runLater(() -> {
+            MessageBox.show("Trò chơi kết thúc", customMessage, MessageBox.MessageButtons.OK);
+        });
+    }
 
     public void setPhase(GamePhase newPhase) {
         this.currentPhase = newPhase;
@@ -87,7 +120,10 @@ public class GameController {
             else gameLoop.pause();
         }
         centerContainer.setMouseTransparent(newPhase != GamePhase.HUMAN_TURN);
-        togglePauseOverlay(newPhase == GamePhase.PAUSED);
+        // Chỉ hiện overlay khi được yêu cầu rõ ràng từ nút Tạm Dừng
+        togglePauseOverlay(newPhase == GamePhase.PAUSED && showPauseOverlay);
+        // Reset cờ khi thoát khỏi PAUSED
+        if (newPhase != GamePhase.PAUSED) showPauseOverlay = false;
 
         switch (newPhase) {
             case STANDBY:
@@ -99,8 +135,11 @@ public class GameController {
                 btnPauseSystem.setManaged(false);
                 btnStart.setVisible(true); btnStart.setManaged(true); btnStart.setDisable(false);
                 btnExit.setVisible(true); btnExit.setManaged(true);
+                btnExit.setText("Thoát"); // ở màn hình standby/kết thúc — nút này thoát về menu chính
                 btnStart.setText(newPhase == GamePhase.STANDBY ? "Bắt đầu" : "Chơi lại");
-                btnMatchSettings.setDisable(false);
+                // Hiện cả 2 nút khi chưa bắt đầu hoặc kết thúc
+                btnMatchSettings.setVisible(true); btnMatchSettings.setManaged(true); btnMatchSettings.setDisable(false);
+                btnSettings.setVisible(true); btnSettings.setManaged(true); btnSettings.setDisable(false);
                 break;
             case HUMAN_TURN:
             case AI_TURN:
@@ -111,7 +150,9 @@ public class GameController {
                 }
                 btnStart.setVisible(false); btnStart.setManaged(false);
                 btnExit.setVisible(false); btnExit.setManaged(false);
-                btnMatchSettings.setDisable(false);
+                // Ẩn cả 2 nút khi đang chơi
+                btnMatchSettings.setVisible(false); btnMatchSettings.setManaged(false);
+                btnSettings.setVisible(false); btnSettings.setManaged(false);
                 updatePauseButtonText("Tạm dừng");
                 if (currentGameMode == 2) {
                     btnPauseSystem.setVisible(true);
@@ -136,6 +177,9 @@ public class GameController {
                 if (btnPauseSystem != null) btnPauseSystem.setDisable(false);
                 if (controlsP1 != null) controlsP1.setDisable(false); 
                 if (controlsP2 != null) controlsP2.setDisable(false);
+                // Hiện lại cả 2 nút khi tạm dừng
+                btnMatchSettings.setVisible(true); btnMatchSettings.setManaged(true); btnMatchSettings.setDisable(false);
+                btnSettings.setVisible(true); btnSettings.setManaged(true); btnSettings.setDisable(false);
                 break;
         }
     }
@@ -152,10 +196,22 @@ public class GameController {
         btnSurrender.setDisable(false);
         btnSurrender.setOpacity(1.0);
         boolean canPlay = isMyTurn && currentPhase != GamePhase.ANIMATING;
-        btnHint.setDisable(!canPlay);
-        btnHint.setOpacity(canPlay ? 1.0 : 0.4);
+        
         int req = (currentGameMode == 1) ? 2 : 1;
         boolean canUndo = canPlay && boardHistory.size() >= req;
+        
+        if (color == Types.PlayerColor.WHITE) {
+            if (hintCooldownP1 > 0) canPlay = false; // Disable hint during cooldown
+            canUndo = canUndo && (p1UndoCount > 0) && !p1HasUndoneThisTurn;
+            if (btnUndo != null) btnUndo.setText("Đi lại (" + p1UndoCount + ")");
+        } else {
+            if (hintCooldownP2 > 0) canPlay = false;
+            canUndo = canUndo && (p2UndoCount > 0) && !p2HasUndoneThisTurn;
+            if (btnUndo != null) btnUndo.setText("Đi lại (" + p2UndoCount + ")");
+        }
+
+        btnHint.setDisable(!canPlay);
+        btnHint.setOpacity(canPlay ? 1.0 : 0.4);
         btnUndo.setDisable(!canUndo);
         btnUndo.setOpacity(canUndo ? 1.0 : 0.4);
         controls.setDisable(false);
@@ -166,11 +222,13 @@ public class GameController {
         if (pauseLabel != null) {
             pauseLabel.setVisible(show);
             pauseLabel.setManaged(show);
+            if (show) pauseLabel.toFront(); // đảm bảo hiện trên cùng, trên cả animationOverlay
         }
     }
 
     @FXML
     public void initialize() {
+        instance = this;
         SoundManager.loadSounds();
         this.aiController = new AIController(this);
         animationOverlay = new Pane(); 
@@ -198,8 +256,8 @@ public class GameController {
         this.currentGameMode = mode;
         this.isGameStarted = true;
         SoundManager.forceUnmute(); // Mở khóa âm thanh khi bắt đầu
-        Player p1 = (mode == 2) ? new Player("AI Trắng", Types.PlayerColor.WHITE, Types.PlayerType.AI) : new Player("Player 1", Types.PlayerColor.WHITE, Types.PlayerType.HUMAN);
-        Player p2 = (mode == 0) ? new Player("Player 2", Types.PlayerColor.BLUE, Types.PlayerType.HUMAN) : new Player("AI Xanh", Types.PlayerColor.BLUE, Types.PlayerType.AI);
+        Player p1 = (mode == 2) ? new Player("AI Trắng", Types.PlayerColor.WHITE, Types.PlayerType.AI) : new Player("Người chơi 1", Types.PlayerColor.WHITE, Types.PlayerType.HUMAN);
+        Player p2 = (mode == 0) ? new Player("Người chơi 2", Types.PlayerColor.BLUE, Types.PlayerType.HUMAN) : new Player("AI Xanh", Types.PlayerColor.BLUE, Types.PlayerType.AI);
         this.gameState = new GameState(p1, p2);
         boardHistory.clear(); 
         turnHistory.clear();
@@ -209,6 +267,14 @@ public class GameController {
         if (player1ColorCircle != null) player1ColorCircle.setFill(Color.WHITE);
         if (player2ColorCircle != null) player2ColorCircle.setFill(Color.web("#3498db"));
         totalMatchTime = 600; 
+        
+        noCaptureOrPromotionCounter = 0;
+        hintCooldownP1 = 0; hintCooldownP2 = 0;
+        p1UndoCount = 3; p2UndoCount = 3;
+        p1HasUndoneThisTurn = false; p2HasUndoneThisTurn = false;
+        if (btnHintP1 != null) btnHintP1.setText("Gợi ý");
+        if (btnHintP2 != null) btnHintP2.setText("Gợi ý");
+
         resetTurnTimers();
         totalTimerLabel.setText(formatTime(totalMatchTime));
         if (gameLoop != null) gameLoop.stop();
@@ -218,19 +284,36 @@ public class GameController {
 
     private void updateTimers() {
         if (gameState.isGameOver() || !isGameStarted) return;
+        
+        // Cooldown Hint
+        if (hintCooldownP1 > 0) {
+            hintCooldownP1--;
+            if (btnHintP1 != null) {
+                if (hintCooldownP1 == 0) { btnHintP1.setText("Gợi ý"); } 
+                else { btnHintP1.setText(hintCooldownP1 + "s"); }
+            }
+        }
+        if (hintCooldownP2 > 0) {
+            hintCooldownP2--;
+            if (btnHintP2 != null) {
+                if (hintCooldownP2 == 0) { btnHintP2.setText("Gợi ý"); } 
+                else { btnHintP2.setText(hintCooldownP2 + "s"); }
+            }
+        }
+
         if (totalMatchTime > 0) { 
             totalMatchTime--; 
             totalTimerLabel.setText(formatTime(totalMatchTime)); 
         } else { 
-            handleTimeout("Trận đấu hòa do hết giờ tổng!"); 
+            handleGameOver("Trận đấu hòa do hết giờ tổng!"); 
             return; 
         }
         if (gameState.getCurrentPlayerColor() == Types.PlayerColor.WHITE) {
             if (player1TurnTime > 0) { player1TurnTime--; player1TimerLabel.setText(player1TurnTime + "s"); } 
-            else handleTimeout(player2NameLabel.getText() + " THẮNG!");
+            else handleGameOver(player2NameLabel.getText() + " THẮNG!");
         } else {
             if (player2TurnTime > 0) { player2TurnTime--; player2TimerLabel.setText(player2TurnTime + "s"); } 
-            else handleTimeout(player1NameLabel.getText() + " THẮNG!");
+            else handleGameOver(player1NameLabel.getText() + " THẮNG!");
         }
     }
 
@@ -243,15 +326,6 @@ public class GameController {
     
     private String formatTime(int s) { return String.format("%02d:%02d", s / 60, s % 60); }
 
-    private void handleTimeout(String msg) {
-        if (gameLoop != null) gameLoop.stop();
-        gameState.setGameOver(true); 
-        this.isGameStarted = false;
-        setPhase(GamePhase.GAME_OVER);
-        Alert a = new Alert(AlertType.INFORMATION); 
-        a.setTitle("Hết giờ"); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
-    }
-
     @FXML private void handleStartGame() {
         startGame(currentGameMode);
         if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) { 
@@ -263,7 +337,12 @@ public class GameController {
     @FXML private void handlePause() {
         if (!isGameStarted) return; 
         if (currentPhase == GamePhase.PAUSED) resumeGame();
-        else { this.phaseBeforePause = currentPhase; setPhase(GamePhase.PAUSED); updatePauseButtonText("Tiếp tục"); }
+        else { 
+            showPauseOverlay = true; // chỉ khi nhấn nút Tạm dừng mới hiện overlay
+            this.phaseBeforePause = currentPhase; 
+            setPhase(GamePhase.PAUSED); 
+            updatePauseButtonText("Tiếp tục"); 
+        }
     }
 
     private void updatePauseButtonText(String text) {
@@ -298,10 +377,34 @@ public class GameController {
 
     public void resetHintButton() { if (currentPhase == GamePhase.ANIMATING && !gameState.isGameOver()) setPhase(GamePhase.HUMAN_TURN); }
 
+    public void startHintCooldown() {
+        if (gameState.getCurrentPlayerColor() == Types.PlayerColor.WHITE) {
+            hintCooldownP1 = 60;
+            if (btnHintP1 != null) btnHintP1.setText("60s");
+        } else {
+            hintCooldownP2 = 60;
+            if (btnHintP2 != null) btnHintP2.setText("60s");
+        }
+        if (currentPhase == GamePhase.ANIMATING && !gameState.isGameOver()) setPhase(GamePhase.HUMAN_TURN); 
+    }
+
+    public void resetHintButtonText() {
+        if (btnHintP1 != null && hintCooldownP1 == 0) btnHintP1.setText("Gợi ý");
+        if (btnHintP2 != null && hintCooldownP2 == 0) btnHintP2.setText("Gợi ý");
+    }
+
     @FXML private void handleUndoMove() {
         if (currentPhase != GamePhase.HUMAN_TURN) return;
         int steps = (currentGameMode == 1) ? 2 : 1;
         if (boardHistory.size() >= steps) {
+            if (gameState.getCurrentPlayerColor() == Types.PlayerColor.WHITE) {
+                if (p1UndoCount <= 0 || p1HasUndoneThisTurn) return;
+                p1UndoCount--; p1HasUndoneThisTurn = true;
+            } else {
+                if (p2UndoCount <= 0 || p2HasUndoneThisTurn) return;
+                p2UndoCount--; p2HasUndoneThisTurn = true;
+            }
+
             for (int i = 0; i < steps; i++) { gameState.setBoard(boardHistory.pop()); gameState.setCurrentPlayerColor(turnHistory.pop()); }
             boardPanelController.clearSelection(); boardPanelController.refreshBoard(gameState.getBoard());
             resetTurnTimers(); if(aiController != null) aiController.stop(); setPhase(GamePhase.HUMAN_TURN);
@@ -310,7 +413,7 @@ public class GameController {
 
     // --- PHẦN SỬA LỖI ÂM THANH ---
     public void applyMove(Move move) {
-        if (gameState.isGameOver()) return;
+        if (!isGameStarted || gameState == null || gameState.isGameOver() || currentPhase == GamePhase.GAME_OVER) return;
         setPhase(GamePhase.ANIMATING);
         SoundManager.forceUnmute(); // Đảm bảo âm thanh luôn được mở trước khi phát
 
@@ -371,13 +474,41 @@ public class GameController {
     }
 
     private void handleNextTurnLogic(Move move, boolean prom) {
+        if (move.isJump() || prom) noCaptureOrPromotionCounter = 0;
+        else noCaptureOrPromotionCounter++;
+
         if (move.isJump() && !prom && MoveController.canJumpAgain(gameState.getBoard(), move.getEndRow(), move.getEndCol())) {
             boardPanelController.setForcedPiece(move.getEndRow(), move.getEndCol());
-            setPhase(GamePhase.HUMAN_TURN);
+            if (gameState.getCurrentPlayer().getType() == Types.PlayerType.AI) {
+                setPhase(GamePhase.AI_TURN);
+                if (aiController != null) aiController.processAITurn(gameState);
+            } else {
+                setPhase(GamePhase.HUMAN_TURN);
+            }
         } else {
+            // Draw detection rule (40 moves)
+            if (noCaptureOrPromotionCounter >= 40) {
+                handleGameOver("Trận đấu HÒA! (40 nước không ai bắt quân hay phong vua)");
+                return;
+            }
+
             boardPanelController.clearForcedPiece();
             resetTurnTimers(); 
+            
+            // Undo limiter reset for next turn
+            if (gameState.getCurrentPlayerColor() == Types.PlayerColor.WHITE) p1HasUndoneThisTurn = false;
+            else p2HasUndoneThisTurn = false;
+            
             gameState.switchTurn();
+            
+            if (MoveController.getAllLegalMoves(gameState.getBoard(), gameState.getCurrentPlayerColor()).isEmpty()) {
+                String winner = (gameState.getCurrentPlayerColor() == Types.PlayerColor.WHITE) ? 
+                                ((player2NameLabel != null) ? player2NameLabel.getText() : "Người chơi 2") : 
+                                ((player1NameLabel != null) ? player1NameLabel.getText() : "Người chơi 1");
+                handleGameOver(winner + " THẮNG! (Đối phương hết nước)");
+                return;
+            }
+            
             if (gameState.isGameOver()) setPhase(GamePhase.GAME_OVER);
             else {
                 if (currentPhase == GamePhase.PAUSED || phaseBeforePause == GamePhase.PAUSED) {
@@ -403,8 +534,11 @@ public class GameController {
             if (isGameStarted && currentPhase != GamePhase.PAUSED) { this.phaseBeforePause = currentPhase; setPhase(GamePhase.PAUSED); }
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/checkers/controller/settings_dialog.fxml"));
             Node root = loader.load();
+            SettingsController sc = loader.getController();
+            // Chỉ hiện nút "Thoát về menu" khi đang có ván chơi đang diễn ra
+            sc.setFromMenu(!isGameStarted);
             MessageBox.showCustom("CÀI ĐẶT", root, MessageBox.MessageButtons.OK);
-            resumeGame();
+            // Không resumeGame() ở đây — để game giữ nguyên trạng thái Pause
         } catch (IOException e) { e.printStackTrace(); }
     }
 
@@ -419,7 +553,7 @@ public class GameController {
             ctrl.init(ai1Config, ai2Config, hintConfig, currentGameMode);
             MessageBox.showCustom("THIẾT LẬP MÁY", root, MessageBox.MessageButtons.OK);
             ctrl.save(ai1Config, ai2Config, hintConfig);
-            resumeGame();
+            // Không resumeGame() ở đây — chỉ lưu cài đặt, game vẫn giữ trạng thái Pause
         } catch (IOException e) { e.printStackTrace(); }
     }
 

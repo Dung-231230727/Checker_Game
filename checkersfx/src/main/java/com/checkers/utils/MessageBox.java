@@ -32,7 +32,7 @@ public class MessageBox {
     public static boolean show(String title, String message, MessageButtons buttonType) {
         Label lbl = new Label(message);
         lbl.setWrapText(true);
-        lbl.setStyle("-fx-text-fill: #8E1451; -fx-font-size: 18px; -fx-font-weight: bold;");
+        lbl.setStyle("-fx-text-fill: #475569; -fx-font-size: 18px; -fx-font-weight: bold;");
         lbl.setAlignment(Pos.CENTER);
         return showCustom(title, lbl, buttonType);
     }

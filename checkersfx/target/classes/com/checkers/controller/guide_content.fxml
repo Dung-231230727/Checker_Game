@@ -14,25 +14,25 @@
     <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" prefHeight="300.0">
         <VBox spacing="12.0">
             <VBox spacing="5.0">
-                <Label text="1. CÁCH DI CHUYỂN" style="-fx-text-fill: #8E1451; -fx-font-weight: bold; -fx-font-size: 15px;"/>
+                <Label text="1. CÁCH DI CHUYỂN" style="-fx-text-fill: #64748b; -fx-font-weight: bold; -fx-font-size: 15px;"/>
                 <Label text="• Quân thường: Chỉ đi chéo tiến lên 1 ô vào ô trống màu tối." 
-                       style="-fx-text-fill: #8E1451;" wrapText="true"/>
+                       style="-fx-text-fill: #475569;" wrapText="true"/>
                 <Label text="• Quân Vua: Được phong khi tới hàng cuối đối phương, có thể đi chéo cả tiến và lùi." 
-                       style="-fx-text-fill: #8E1451;" wrapText="true"/>
+                       style="-fx-text-fill: #475569;" wrapText="true"/>
             </VBox>
 
             <VBox spacing="5.0">
-                <Label text="2. LUẬT ĂN QUÂN" style="-fx-text-fill: #8E1451; -fx-font-weight: bold; -fx-font-size: 15px;"/>
+                <Label text="2. LUẬT ĂN QUÂN" style="-fx-text-fill: #64748b; -fx-font-weight: bold; -fx-font-size: 15px;"/>
                 <Label text="• Bắt buộc ăn quân: Nếu có nước ăn quân, bạn không được thực hiện nước đi khác." 
-                       style="-fx-text-fill: #8E1451;" wrapText="true"/>
+                       style="-fx-text-fill: #475569;" wrapText="true"/>
                 <Label text="• Ăn kép: Nếu sau khi ăn, quân đó vẫn ở vị trí có thể ăn tiếp quân khác, bạn phải nhảy tiếp cho đến khi hết nước ăn." 
-                       style="-fx-text-fill: #8E1451;" wrapText="true"/>
+                       style="-fx-text-fill: #475569;" wrapText="true"/>
             </VBox>
 
             <VBox spacing="5.0">
-                <Label text="3. THẮNG THUA" style="-fx-text-fill: #8E1451; -fx-font-weight: bold; -fx-font-size: 15px;"/>
+                <Label text="3. THẮNG THUA" style="-fx-text-fill: #64748b; -fx-font-weight: bold; -fx-font-size: 15px;"/>
                 <Label text="• Bạn thắng khi đối phương mất hết quân hoặc không còn nước đi hợp lệ nào." 
-                       style="-fx-text-fill: #8E1451;" wrapText="true"/>
+                       style="-fx-text-fill: #475569;" wrapText="true"/>
             </VBox>
         </VBox>
     </ScrollPane>
