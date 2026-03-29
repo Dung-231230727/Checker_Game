@@ -7,6 +7,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -16,20 +20,38 @@ public class MainMenuController {
     private AIConfig ai1Config = new AIConfig(AIConfig.Mode.BALANCED, 5);
     private AIConfig ai2Config = new AIConfig(AIConfig.Mode.BALANCED, 5);
     private AIConfig hintConfig = new AIConfig(AIConfig.Mode.BALANCED, 5);
+    @FXML private Button btnStartGame;
+    @FXML private Button btnSelectMode;
+    private int selectedMode = 0; // Mặc định là PvP
+
+    @FXML
+    private void showModeMenu(ActionEvent event) {
+        ContextMenu contextMenu = new ContextMenu();
+        
+        MenuItem pvpItem = new MenuItem("Người Vs Người (PVP)");
+        pvpItem.setOnAction(e -> updateSelectedMode(0, "PVP"));
+        
+        MenuItem pveItem = new MenuItem("Người Vs Máy (PVE)");
+        pveItem.setOnAction(e -> updateSelectedMode(1, "PVE"));
+        
+        MenuItem eveItem = new MenuItem("Máy Vs Máy (EVE)");
+        eveItem.setOnAction(e -> updateSelectedMode(2, "EVE"));
+        
+        contextMenu.getItems().addAll(pvpItem, pveItem, eveItem);
+        // Hiển thị dính ngay dưới nút Chọn Chế độ
+        contextMenu.show(btnSelectMode, Side.BOTTOM, 0, 0);
+    }
     
-    @FXML
-    private void handlePvP(ActionEvent event) throws IOException {
-        loadGameMode(event, 0); // 0 là chế độ 2 người chơi
+    private void updateSelectedMode(int mode, String modeName) {
+        this.selectedMode = mode;
+        if (btnStartGame != null) {
+            btnStartGame.setText("BẮT ĐẦU: " + modeName);
+        }
     }
 
     @FXML
-    private void handlePvE(ActionEvent event) throws IOException {
-        loadGameMode(event, 1); // 1 là chế độ đánh với máy
-    }
-
-    @FXML
-    private void handleEvE(ActionEvent event) throws IOException {
-        loadGameMode(event, 2); // 2 là chế độ máy đánh với máy
+    private void handleStartSelectedMode(ActionEvent event) throws IOException {
+        loadGameMode(event, selectedMode);
     }
 
     private void loadGameMode(ActionEvent event, int mode) {
@@ -62,14 +84,15 @@ public class MainMenuController {
     }
 
     @FXML
-    private void handleSettings(ActionEvent event) { // Ở GameController thì tên là handleOpenSettings
+    private void handleSettings(ActionEvent event) {
        try {
-            // 1. Nạp file FXML chứa các nút gạt (Âm thanh, Nhạc, Rung)
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/checkers/controller/settings_dialog.fxml"));
             Node settingsContent = loader.load();
             
-            // 2. Gọi MessageBox hiển thị giao diện Cài đặt
-            // Dùng nút OK để đóng lại sau khi chỉnh sửa
+            // Ẩn nút Thoát khi mở từ menu chính
+            SettingsController sc = loader.getController();
+            sc.setFromMenu(true);
+            
             MessageBox.showCustom("CÀI ĐẶT", settingsContent, MessageBox.MessageButtons.OK);
             
         } catch (IOException e) {
@@ -101,7 +124,6 @@ public class MainMenuController {
     @FXML
     private void handleOpenMatchSettings() {
         try {
-            // Đảm bảo đường dẫn này khớp 100% với cấu trúc thư mục resources của bạn
             URL fxmlLocation = getClass().getResource("/com/checkers/controller/match_settings.fxml");
             if (fxmlLocation == null) {
                 System.err.println("LỖI: Không tìm thấy file match_settings.fxml!");
@@ -112,14 +134,12 @@ public class MainMenuController {
             Node root = loader.load();
             
             MatchSettingsController ctrl = loader.getController();
-            
-            // Truyền các đối tượng config mà MainMenuController đang giữ
-            // (Xem mục 2 bên dưới để biết cách lưu trữ các biến này)
-            ctrl.init(ai1Config, ai2Config, hintConfig, 2); 
+            // Từ menu chính: luôn hiển thị đủ cả 2 AI để cấu hình trước
+            ctrl.init(ai1Config, ai2Config, hintConfig, 2);
 
             MessageBox.showCustom("THIẾT LẬP MÁY", root, MessageBox.MessageButtons.OK);
             
-            ctrl.save(ai2Config, ai1Config, hintConfig);
+            ctrl.save(ai1Config, ai2Config, hintConfig);
         } catch (IOException e) {
             e.printStackTrace();
         }

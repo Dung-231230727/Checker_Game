@@ -59,9 +59,8 @@ public class AIController {
             aiTask.setOnSucceeded(event -> {
                 isThinking = false;
                 
-                // 3. KIỂM TRA HẬU KỲ: Nếu lúc tính xong mà game đang Pause, 
-                // cất nước đi đó đi, không apply vào bàn cờ.
-                if (gameCtrl.getCurrentPhase() == GameController.GamePhase.PAUSED) {
+                // KIỂM TRA HẬU KỲ: Tránh lỗi Race Condition khi người chơi vừa Undo xong.
+                if (gameCtrl.getCurrentPhase() != GameController.GamePhase.AI_TURN) {
                     return;
                 }
 
@@ -69,7 +68,7 @@ public class AIController {
                 if (bestMove != null) {
                     Platform.runLater(() -> gameCtrl.applyMove(bestMove));
                 } else {
-                    Platform.runLater(() -> gameCtrl.handleGameOver());
+                    Platform.runLater(() -> gameCtrl.handleGameOver("Lỗi AI: Không tìm thấy nước đi thích hợp!"));
                 }
             });
 
@@ -111,8 +110,10 @@ public class AIController {
         hintTask.setOnSucceeded(e -> {
             isHinting = false; 
             
-            // Sau khi tính gợi ý xong, nếu đang Pause thì chỉ reset nút mà không vẽ gợi ý
-            Platform.runLater(() -> gameCtrl.setPhase(GameController.GamePhase.HUMAN_TURN));
+            // Bắt đầu đếm ngược thời gian của Gợi ý
+            Platform.runLater(() -> {
+                gameCtrl.startHintCooldown();
+            });
 
             if (gameCtrl.getCurrentPhase() == GameController.GamePhase.PAUSED) {
                 return;

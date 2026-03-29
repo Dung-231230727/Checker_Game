@@ -1,6 +1,7 @@
 package com.checkers.controller;
 
 import com.checkers.model.*;
+import javafx.animation.ScaleTransition;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
@@ -8,6 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
+import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ public class BoardController {
     private int forcedRow = -1;
     private int forcedCol = -1;
     private boolean isHintMode = false;
+    private ScaleTransition pulseAnimation;
 
     public void setForcedPiece(int r, int c) {
         this.forcedRow = r;
@@ -113,18 +116,18 @@ public class BoardController {
                     
                     // KIỂM TRA ĐỂ ĐỔI MÀU VIỀN
                     if (row == selectedRow && col == selectedCol) {
-                        // Tìm Circle bên trong StackPane một cách an toàn
-                        pieceView.getChildren().stream()
-                                 .filter(node -> node instanceof Circle)
-                                 .findFirst()
-                                 .ifPresent(node -> {
-                                     Circle innerCircle = (Circle) node;
-                                     if (isHintMode) {
-                                         innerCircle.getStyleClass().add("piece-hinted"); 
-                                     } else {
-                                         innerCircle.getStyleClass().add("piece-selected"); 
-                                     }
-                                 });
+                        if (!pieceView.getChildren().isEmpty()) {
+                            javafx.scene.Node innerPiece = pieceView.getChildren().get(0);
+                            if (isHintMode) {
+                                innerPiece.getStyleClass().add("piece-hinted");
+                            } else {
+                                innerPiece.getStyleClass().add("piece-selected");
+                            }
+                            // ===== PULSE ANIMATION =====
+                            if (!isHintMode) {
+                                startPulse(pieceView);
+                            }
+                        }
                     }
                     
                     square.getChildren().add(pieceView);
@@ -157,22 +160,27 @@ public class BoardController {
     private StackPane createPiece(String colorClass, StackPane container, boolean isKing) {
         StackPane pieceWrapper = new StackPane();
         
-        Circle piece = new Circle();
+        javafx.scene.layout.Region piece = new javafx.scene.layout.Region();
         piece.getStyleClass().addAll("piece", colorClass);
-        // Bind kích thước Circle theo container như cũ
-        piece.radiusProperty().bind(Bindings.min(
-            container.widthProperty().divide(2.8), 
-            container.heightProperty().divide(2.8)
-        ));
+
+        // Ép hình TRÒN TUYỆT ĐỐI — Round Geometric (Clean Tactical Pastel)
+        javafx.beans.binding.NumberBinding size = Bindings.min(
+            container.widthProperty().multiply(0.68),
+            container.heightProperty().multiply(0.68)
+        );
+        piece.maxWidthProperty().bind(size);
+        piece.maxHeightProperty().bind(size);
+        piece.minWidthProperty().bind(size);
+        piece.minHeightProperty().bind(size);
+        // CSS -fx-background-radius: 1000px sẽ ép tròn, nhưng thêm inline để chắc chắn
+        piece.setStyle("-fx-background-radius: 1000px; -fx-border-radius: 1000px;");
         
         pieceWrapper.getChildren().add(piece);
 
         if (isKing) {
-            // Nếu là Vua, thêm một Label chứa biểu tượng vương miện lên trên cùng
             javafx.scene.control.Label crown = new javafx.scene.control.Label("♔");
             crown.getStyleClass().add("crown-label");
             pieceWrapper.getChildren().add(crown);
-            // Gắn cờ vào wrapper để dễ nhận biết
             pieceWrapper.getStyleClass().add("is-king");
         }
 
@@ -257,6 +265,28 @@ public class BoardController {
         selectedCol = -1;
         validMovesForSelected.clear();
         isHintMode = false;
+        stopPulse();
+    }
+
+    /** Bắt đầu hiệu ứng nhịp thở (Pulse) cho quân cờ đang được chọn */
+    private void startPulse(StackPane target) {
+        stopPulse();
+        pulseAnimation = new ScaleTransition(Duration.millis(500), target);
+        pulseAnimation.setFromX(1.0);
+        pulseAnimation.setFromY(1.0);
+        pulseAnimation.setToX(1.10);
+        pulseAnimation.setToY(1.10);
+        pulseAnimation.setAutoReverse(true);
+        pulseAnimation.setCycleCount(ScaleTransition.INDEFINITE);
+        pulseAnimation.play();
+    }
+
+    /** Dừng hiệu ứng Pulse */
+    private void stopPulse() {
+        if (pulseAnimation != null) {
+            pulseAnimation.stop();
+            pulseAnimation = null;
+        }
     }
 
     public StackPane getSquareAt(int row, int col) {
