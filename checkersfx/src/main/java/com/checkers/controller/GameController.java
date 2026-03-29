@@ -15,7 +15,6 @@ import javafx.geometry.Bounds;
 import javafx.application.Platform;
 
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.GridPane;
@@ -229,7 +228,6 @@ public class GameController {
     @FXML
     public void initialize() {
         instance = this;
-        SoundManager.loadSounds();
         this.aiController = new AIController(this);
         animationOverlay = new Pane(); 
         animationOverlay.setMouseTransparent(true);
