@@ -17,6 +17,8 @@ public class App extends Application {
         SoundManager.loadSounds(); // Khởi tạo âm thanh và nhạc nền
         window = stage;
         window.setTitle("Checker Game"); 
+        window.setMinWidth(1024);
+        window.setMinHeight(768);
         
         scene = new Scene(loadFXML("controller/main_menu"), 1024, 768);
         window.setScene(scene);
