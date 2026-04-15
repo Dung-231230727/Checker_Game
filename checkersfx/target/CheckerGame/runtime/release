@@ -1,0 +1,2 @@
+JAVA_VERSION="26"
+MODULES="java.base java.datatransfer java.xml java.prefs java.desktop java.scripting javafx.base javafx.graphics javafx.controls javafx.fxml javafx.media"

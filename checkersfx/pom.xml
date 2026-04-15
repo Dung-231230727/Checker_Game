@@ -77,6 +77,37 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Copy JavaFX Windows-native JARs cho jpackage module-path -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-javafx-mods</id>
+                        <phase>package</phase>
+                        <goals><goal>copy-dependencies</goal></goals>
+                        <configuration>
+                            <!-- Chỉ copy các JAR win-classified (có native code) của JavaFX -->
+                            <outputDirectory>${project.build.directory}/javafx-mods</outputDirectory>
+                            <includeGroupIds>org.openjfx</includeGroupIds>
+                            <includeClassifiers>win</includeClassifiers>
+                            <stripVersion>false</stripVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-app-libs</id>
+                        <phase>package</phase>
+                        <goals><goal>copy-dependencies</goal></goals>
+                        <configuration>
+                            <!-- Copy tất cả JAR không phải JavaFX vào thư mục libs (nếu có deps khác) -->
+                            <outputDirectory>${project.build.directory}/app-lib</outputDirectory>
+                            <excludeGroupIds>org.openjfx</excludeGroupIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
